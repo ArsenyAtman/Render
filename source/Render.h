@@ -56,6 +56,15 @@ private:
 	VkFormat swapChainImageFormat;
 	VkExtent2D swapChainExtent;
 	std::vector<VkImageView> swapChainImageViews;
+	VkPipelineLayout pipelineLayout;
+	VkRenderPass renderPass;
+	VkPipeline graphicsPipeline;
+	std::vector<VkFramebuffer> swapChainFramebuffers;
+	VkCommandPool commandPool;
+	VkCommandBuffer commandBuffer;
+	VkSemaphore imageAvailableSemaphore;
+	VkSemaphore renderFinishedSemaphore;
+	VkFence inFlightFence;
 
 	void initWindow();
 	void initVulkan();
@@ -90,4 +99,16 @@ private:
 
 	VkShaderModule createShaderModule(const std::vector<char>& code);
 
+	void createRenderPass();
+
+	void createFramebuffers();
+
+	void createCommandPool();
+
+	void createCommandBuffer();
+	void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+
+	void drawFrame();
+
+	void createSyncObjects();
 };
