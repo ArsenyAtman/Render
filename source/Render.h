@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <optional>
+#include <string>
 
 #define GLFW_INCLUDE_VULKAN // Include Vulkan inside GLFW
 #include <GLFW/glfw3.h>
