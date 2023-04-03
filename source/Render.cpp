@@ -9,6 +9,7 @@
 
 #include "WindowManager.h"
 #include "SurfaceManager.h"
+#include "InstanceManager.h"
 
 Render::Render()
 {
@@ -18,6 +19,8 @@ Render::Render()
 void Render::run()
 {
 	windowManager = new WindowManager(800, 600, "Vulkan Render");
+	instanceManager = new InstanceManager(windowManager, enableValidationLayers, validationLayers);
+	surfaceManager = new SurfaceManager(instanceManager->getInstance(), windowManager->getWindow());
 
 	initVulkan();
 	
@@ -36,8 +39,6 @@ void Render::run()
 
 void Render::initVulkan()
 {
-	createInstance();
-	surfaceManager = new SurfaceManager(instance, windowManager->getWindow());
 	pickPhysicalDevice();
 	createLogicalDevice();
 	createSwapChain();
@@ -70,84 +71,13 @@ void Render::deinitVulkan()
 	vkDestroySwapchainKHR(device, swapChain, nullptr);
 	vkDestroyDevice(device, nullptr);
 	delete surfaceManager;
-	vkDestroyInstance(instance, nullptr);
-}
-
-void Render::createInstance()
-{
-	if (enableValidationLayers && !checkValidationLayerSupport())
-	{
-		throw std::runtime_error("Validation layers requested, but not available!");
-	}
-
-	VkApplicationInfo applicationInfo;
-	applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	applicationInfo.pApplicationName = "Render";
-	applicationInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-	applicationInfo.pEngineName = "None";
-	applicationInfo.engineVersion = VK_MAKE_VERSION(0, 0, 0);
-	applicationInfo.apiVersion = VK_API_VERSION_1_0;
-
-	VkInstanceCreateInfo createInfo = VkInstanceCreateInfo();
-	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-	createInfo.pApplicationInfo = &applicationInfo;
-	uint32_t glfwExtensionCount = 0;
-	const char** glfwExtensions;
-	glfwExtensions = windowManager->getRequiredExtensions(&glfwExtensionCount);
-	createInfo.enabledExtensionCount = glfwExtensionCount;
-	createInfo.ppEnabledExtensionNames = glfwExtensions;
-	if (enableValidationLayers)
-	{
-		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-		createInfo.ppEnabledLayerNames = validationLayers.data();
-	}
-	else
-	{
-		createInfo.enabledLayerCount = 0;
-	}
-
-	VkResult result = vkCreateInstance(&createInfo, nullptr, &instance);
-
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create vulkan instance!");
-	}
-}
-
-bool Render::checkValidationLayerSupport()
-{
-	uint32_t layerCount;
-	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-
-	std::vector<VkLayerProperties> availableLayers(layerCount);
-	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
-
-	for (const char* layerName : validationLayers)
-	{
-		bool layerFound = false;
-
-		for (const VkLayerProperties& layerProperties : availableLayers)
-		{
-			if (strcmp(layerName, layerProperties.layerName) == 0)
-			{
-				layerFound = true;
-				break;
-			}
-		}
-
-		if (!layerFound)
-		{
-			return false;
-		}
-	}
-
-	return true;
+	delete instanceManager;
 }
 
 void Render::pickPhysicalDevice()
 {
 	uint32_t deviceCount = 0;
-	vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+	vkEnumeratePhysicalDevices(instanceManager->getInstance(), &deviceCount, nullptr);
 
 	if (deviceCount == 0)
 	{
@@ -155,7 +85,7 @@ void Render::pickPhysicalDevice()
 	}
 
 	std::vector<VkPhysicalDevice> devices(deviceCount);
-	vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+	vkEnumeratePhysicalDevices(instanceManager->getInstance(), &deviceCount, devices.data());
 
 	for (const VkPhysicalDevice& device : devices)
 	{

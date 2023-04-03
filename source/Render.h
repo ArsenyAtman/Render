@@ -7,17 +7,18 @@
 #define GLFW_INCLUDE_VULKAN // Include Vulkan inside GLFW
 #include <GLFW/glfw3.h>
 
+#if NDEBUG
+const bool enableValidationLayers = true;
+#else
+const bool enableValidationLayers = false;
+#endif
+
 const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
 const std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
-#if NDEBUG
-	const bool enableValidationLayers = true;
-#else
-	const bool enableValidationLayers = false;
-#endif
-
 class WindowManager;
 class SurfaceManager;
+class InstanceManager;
 
 struct QueueFamilyIndices
 {
@@ -49,8 +50,8 @@ private:
 
 	WindowManager* windowManager = nullptr;
 	SurfaceManager* surfaceManager = nullptr;
-
-	VkInstance instance;
+	InstanceManager* instanceManager = nullptr;
+	
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 	VkDevice device;
 	VkQueue graphicsQueue;
@@ -72,10 +73,6 @@ private:
 
 	void initVulkan();
 	void deinitVulkan();
-
-	void createInstance();
-
-	bool checkValidationLayerSupport();
 
 	void pickPhysicalDevice();
 	bool isDeviceSuitable(VkPhysicalDevice device);

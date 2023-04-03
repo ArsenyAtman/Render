@@ -135,12 +135,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\InstanceManager.cpp" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\Render.cpp" />
     <ClCompile Include="source\SurfaceManager.cpp" />
     <ClCompile Include="source\WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\InstanceManager.h" />
     <ClInclude Include="source\Render.h" />
     <ClInclude Include="source\SurfaceManager.h" />
     <ClInclude Include="source\WindowManager.h" />
