@@ -10,21 +10,20 @@ class WindowManager
 
 public:
 
-	WindowManager(uint32_t width, uint32_t height, const char* name, VkInstance instance);
+	WindowManager(uint32_t width, uint32_t height, const char* name);
 	virtual ~WindowManager();
 
 	virtual void tick();
 
 	bool isClosed() const;
+	VkExtent2D getExtent() const { return extent; }
+	const char** getRequiredExtensions(uint32_t* outCount) const;
 
-	VkSurfaceKHR getSurface() const;
-	VkExtent2D getExtent() const;
+	GLFWwindow* getWindow() const { return window; }
 
 private:
 
-	GLFWwindow* window;
-	VkSurfaceKHR surface;
+	GLFWwindow* window = nullptr;
 	VkExtent2D extent;
-	VkInstance instance;
 };
 

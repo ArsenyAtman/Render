@@ -17,6 +17,7 @@ const std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_N
 #endif
 
 class WindowManager;
+class SurfaceManager;
 
 struct QueueFamilyIndices
 {
@@ -46,7 +47,8 @@ public:
 
 private:
 
-	WindowManager* windowManager;
+	WindowManager* windowManager = nullptr;
+	SurfaceManager* surfaceManager = nullptr;
 
 	VkInstance instance;
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;

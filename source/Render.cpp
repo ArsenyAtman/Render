@@ -8,6 +8,7 @@
 #include <fstream>
 
 #include "WindowManager.h"
+#include "SurfaceManager.h"
 
 Render::Render()
 {
@@ -16,9 +17,7 @@ Render::Render()
 
 void Render::run()
 {
-	createInstance();
-
-	windowManager = new WindowManager(800, 600, "Vulkan Render", instance);
+	windowManager = new WindowManager(800, 600, "Vulkan Render");
 
 	initVulkan();
 	
@@ -37,6 +36,8 @@ void Render::run()
 
 void Render::initVulkan()
 {
+	createInstance();
+	surfaceManager = new SurfaceManager(instance, windowManager->getWindow());
 	pickPhysicalDevice();
 	createLogicalDevice();
 	createSwapChain();
@@ -68,6 +69,7 @@ void Render::deinitVulkan()
 	}
 	vkDestroySwapchainKHR(device, swapChain, nullptr);
 	vkDestroyDevice(device, nullptr);
+	delete surfaceManager;
 	vkDestroyInstance(instance, nullptr);
 }
 
@@ -91,7 +93,7 @@ void Render::createInstance()
 	createInfo.pApplicationInfo = &applicationInfo;
 	uint32_t glfwExtensionCount = 0;
 	const char** glfwExtensions;
-	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+	glfwExtensions = windowManager->getRequiredExtensions(&glfwExtensionCount);
 	createInfo.enabledExtensionCount = glfwExtensionCount;
 	createInfo.ppEnabledExtensionNames = glfwExtensions;
 	if (enableValidationLayers)
@@ -219,7 +221,7 @@ QueueFamilyIndices Render::findQueueFamilies(VkPhysicalDevice device)
 		}
 
 		VkBool32 presentSupport = false;
-		vkGetPhysicalDeviceSurfaceSupportKHR(device, i, windowManager->getSurface(), &presentSupport);
+		vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surfaceManager->getSurface(), &presentSupport);
 		if (presentSupport)
 		{
 			indices.presentFamily = i;
@@ -284,24 +286,24 @@ SwapChainSupportDetails Render::querySwapChainSupport(VkPhysicalDevice device)
 {
 	SwapChainSupportDetails details;
 
-	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, windowManager->getSurface(), &details.capabilities);
+	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surfaceManager->getSurface(), &details.capabilities);
 
 	uint32_t formatCount;
-	vkGetPhysicalDeviceSurfaceFormatsKHR(device, windowManager->getSurface(), &formatCount, nullptr);
+	vkGetPhysicalDeviceSurfaceFormatsKHR(device, surfaceManager->getSurface(), &formatCount, nullptr);
 
 	if (formatCount != 0)
 	{
 		details.formats.resize(formatCount);
-		vkGetPhysicalDeviceSurfaceFormatsKHR(device, windowManager->getSurface(), &formatCount, details.formats.data());
+		vkGetPhysicalDeviceSurfaceFormatsKHR(device, surfaceManager->getSurface(), &formatCount, details.formats.data());
 	}
 
 	uint32_t presentModeCount;
-	vkGetPhysicalDeviceSurfacePresentModesKHR(device, windowManager->getSurface(), &presentModeCount, nullptr);
+	vkGetPhysicalDeviceSurfacePresentModesKHR(device, surfaceManager->getSurface(), &presentModeCount, nullptr);
 
 	if (presentModeCount != 0)
 	{
 		details.presentModes.resize(presentModeCount);
-		vkGetPhysicalDeviceSurfacePresentModesKHR(device, windowManager->getSurface(), &presentModeCount, details.presentModes.data());
+		vkGetPhysicalDeviceSurfacePresentModesKHR(device, surfaceManager->getSurface(), &presentModeCount, details.presentModes.data());
 	}
 
 	return details;
@@ -364,7 +366,7 @@ void Render::createSwapChain()
 
 	VkSwapchainCreateInfoKHR createInfo = VkSwapchainCreateInfoKHR();
 	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-	createInfo.surface = windowManager->getSurface();
+	createInfo.surface = surfaceManager->getSurface();
 	createInfo.minImageCount = imageCount;
 	createInfo.imageFormat = surfaceFormat.format;
 	createInfo.imageColorSpace = surfaceFormat.colorSpace;
