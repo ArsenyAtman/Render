@@ -3,10 +3,11 @@
   <ItemGroup>
     <Filter Include="shaders">
       <UniqueIdentifier>{957d989a-878b-4aa5-8a25-22b2baee99ff}</UniqueIdentifier>
+	<Extensions>frag;vert</Extensions>
     </Filter>
     <Filter Include="source">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+      <Extensions>cpp;h</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
