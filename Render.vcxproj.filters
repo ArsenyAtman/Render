@@ -16,9 +16,15 @@
     <ClCompile Include="source\Render.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\WindowManager.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Render.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\WindowManager.h">
       <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>

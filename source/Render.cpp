@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <fstream>
 
+#include "WindowManager.h"
+
 Render::Render()
 {
 	// ...
@@ -14,25 +16,27 @@ Render::Render()
 
 void Render::run()
 {
-	initWindow();
-	initVulkan();
-	mainLoop();
-	deinitVulkan();
-	deinitWindow();
-}
+	createInstance();
 
-void Render::initWindow()
-{
-	glfwInit();
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // Tell GLFW not to create OpenGL context.
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // Disable resizing.
-	window = glfwCreateWindow(800, 600, "Vulkan", nullptr, nullptr);
+	windowManager = new WindowManager(800, 600, "Vulkan Render", instance);
+
+	initVulkan();
+	
+	while (!windowManager->isClosed())
+	{
+		windowManager->tick();
+		drawFrame();
+	}
+
+	vkDeviceWaitIdle(device);
+
+	deinitVulkan();
+
+	delete windowManager;
 }
 
 void Render::initVulkan()
 {
-	createInstance();
-	createSurface();
 	pickPhysicalDevice();
 	createLogicalDevice();
 	createSwapChain();
@@ -43,17 +47,6 @@ void Render::initVulkan()
 	createCommandPool();
 	createCommandBuffer();
 	createSyncObjects();
-}
-
-void Render::mainLoop()
-{
-	while (!glfwWindowShouldClose(window))
-	{
-		glfwPollEvents();
-		drawFrame();
-	}
-
-	vkDeviceWaitIdle(device);
 }
 
 void Render::deinitVulkan()
@@ -75,14 +68,7 @@ void Render::deinitVulkan()
 	}
 	vkDestroySwapchainKHR(device, swapChain, nullptr);
 	vkDestroyDevice(device, nullptr);
-	vkDestroySurfaceKHR(instance, surface, nullptr);
 	vkDestroyInstance(instance, nullptr);
-}
-
-void Render::deinitWindow()
-{
-	glfwDestroyWindow(window);
-	glfwTerminate();
 }
 
 void Render::createInstance()
@@ -123,15 +109,6 @@ void Render::createInstance()
 	if (result != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create vulkan instance!");
-	}
-}
-
-void Render::createSurface()
-{
-	VkResult result = glfwCreateWindowSurface(instance, window, nullptr, &surface);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Unable to create a window surface!");
 	}
 }
 
@@ -242,7 +219,7 @@ QueueFamilyIndices Render::findQueueFamilies(VkPhysicalDevice device)
 		}
 
 		VkBool32 presentSupport = false;
-		vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
+		vkGetPhysicalDeviceSurfaceSupportKHR(device, i, windowManager->getSurface(), &presentSupport);
 		if (presentSupport)
 		{
 			indices.presentFamily = i;
@@ -307,24 +284,24 @@ SwapChainSupportDetails Render::querySwapChainSupport(VkPhysicalDevice device)
 {
 	SwapChainSupportDetails details;
 
-	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
+	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, windowManager->getSurface(), &details.capabilities);
 
 	uint32_t formatCount;
-	vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
+	vkGetPhysicalDeviceSurfaceFormatsKHR(device, windowManager->getSurface(), &formatCount, nullptr);
 
 	if (formatCount != 0)
 	{
 		details.formats.resize(formatCount);
-		vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data());
+		vkGetPhysicalDeviceSurfaceFormatsKHR(device, windowManager->getSurface(), &formatCount, details.formats.data());
 	}
 
 	uint32_t presentModeCount;
-	vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr);
+	vkGetPhysicalDeviceSurfacePresentModesKHR(device, windowManager->getSurface(), &presentModeCount, nullptr);
 
 	if (presentModeCount != 0)
 	{
 		details.presentModes.resize(presentModeCount);
-		vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, details.presentModes.data());
+		vkGetPhysicalDeviceSurfacePresentModesKHR(device, windowManager->getSurface(), &presentModeCount, details.presentModes.data());
 	}
 
 	return details;
@@ -364,11 +341,7 @@ VkExtent2D Render::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities
 	}
 	else
 	{
-		int width;
-		int height;
-		glfwGetFramebufferSize(window, &width, &height);
-
-		VkExtent2D actualExtent = { static_cast<uint32_t>(width), static_cast<uint32_t>(height) };
+		VkExtent2D actualExtent = windowManager->getExtent();
 
 		actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
 		actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
@@ -391,7 +364,7 @@ void Render::createSwapChain()
 
 	VkSwapchainCreateInfoKHR createInfo = VkSwapchainCreateInfoKHR();
 	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-	createInfo.surface = surface;
+	createInfo.surface = windowManager->getSurface();
 	createInfo.minImageCount = imageCount;
 	createInfo.imageFormat = surfaceFormat.format;
 	createInfo.imageColorSpace = surfaceFormat.colorSpace;

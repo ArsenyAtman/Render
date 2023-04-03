@@ -16,6 +16,8 @@ const std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_N
 	const bool enableValidationLayers = false;
 #endif
 
+class WindowManager;
+
 struct QueueFamilyIndices
 {
 	std::optional<uint32_t> graphicsFamily;
@@ -44,12 +46,12 @@ public:
 
 private:
 
-	GLFWwindow* window;
+	WindowManager* windowManager;
+
 	VkInstance instance;
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 	VkDevice device;
 	VkQueue graphicsQueue;
-	VkSurfaceKHR surface;
 	VkQueue presentQueue;
 	VkSwapchainKHR swapChain;
 	std::vector<VkImage> swapChainImages;
@@ -66,15 +68,10 @@ private:
 	VkSemaphore renderFinishedSemaphore;
 	VkFence inFlightFence;
 
-	void initWindow();
 	void initVulkan();
-	void mainLoop();
 	void deinitVulkan();
-	void deinitWindow();
 
 	void createInstance();
-
-	void createSurface();
 
 	bool checkValidationLayerSupport();
 
