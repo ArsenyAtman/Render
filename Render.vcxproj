@@ -135,25 +135,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="source\InstanceManager.cpp" />
-    <ClCompile Include="source\main.cpp" />
-    <ClCompile Include="source\Render.cpp" />
-    <ClCompile Include="source\SurfaceManager.cpp" />
-    <ClCompile Include="source\WindowManager.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="source\InstanceManager.h" />
-    <ClInclude Include="source\Render.h" />
-    <ClInclude Include="source\SurfaceManager.h" />
-    <ClInclude Include="source\WindowManager.h" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include=".gitattributes" />
     <None Include=".gitignore" />
     <None Include="README.md" />
     <None Include="shaders\compile.bat" />
     <None Include="shaders\shader.frag" />
     <None Include="shaders\shader.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\InstanceManager.cpp" />
+    <ClCompile Include="source\LogicalDeviceManager.cpp" />
+    <ClCompile Include="source\main.cpp" />
+    <ClCompile Include="source\PhysicalDeviceManager.cpp" />
+    <ClCompile Include="source\Render.cpp" />
+    <ClCompile Include="source\SurfaceManager.cpp" />
+    <ClCompile Include="source\SwapChainManager.cpp" />
+    <ClCompile Include="source\WindowManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="source\InstanceManager.h" />
+    <ClInclude Include="source\LogicalDeviceManager.h" />
+    <ClInclude Include="source\PhysicalDeviceManager.h" />
+    <ClInclude Include="source\Render.h" />
+    <ClInclude Include="source\SurfaceManager.h" />
+    <ClInclude Include="source\SwapChainManager.h" />
+    <ClInclude Include="source\WindowManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
