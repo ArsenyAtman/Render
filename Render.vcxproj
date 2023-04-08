@@ -144,6 +144,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\CommandManager.cpp" />
+    <ClCompile Include="source\GraphicsPipeline.cpp" />
     <ClCompile Include="source\InstanceManager.cpp" />
     <ClCompile Include="source\LogicalDeviceManager.cpp" />
     <ClCompile Include="source\main.cpp" />
@@ -156,6 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CommandManager.h" />
+    <ClInclude Include="source\GraphicsPipeline.h" />
     <ClInclude Include="source\InstanceManager.h" />
     <ClInclude Include="source\LogicalDeviceManager.h" />
     <ClInclude Include="source\PhysicalDeviceManager.h" />

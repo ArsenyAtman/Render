@@ -55,6 +55,9 @@
     <ClCompile Include="source\WindowManager.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\GraphicsPipeline.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CommandManager.h">
@@ -82,6 +85,9 @@
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="source\WindowManager.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\GraphicsPipeline.h">
       <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>

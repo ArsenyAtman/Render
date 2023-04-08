@@ -22,7 +22,7 @@ class InstanceManager;
 class PhysicalDeviceManager;
 class LogicalDeviceManager;
 class SwapChainManager;
-
+class GraphicsPipeline;
 class CommandManager;
 class SyncsManager;
 
@@ -42,21 +42,9 @@ private:
 	PhysicalDeviceManager* physicalDeviceManager = nullptr;
 	LogicalDeviceManager* logicalDeviceManager = nullptr;
 	SwapChainManager* swapChainManager = nullptr;
-
+	GraphicsPipeline* graphicsPipeline = nullptr;
 	CommandManager* commandManager = nullptr;
 	SyncsManager* syncsManager = nullptr;
-	
-	VkPipelineLayout pipelineLayout;
-	VkPipeline graphicsPipeline;
-
-	void initVulkan();
-	void deinitVulkan();
-
-	void createGraphicsPipeline();
-
-	std::vector<char> readFile(const std::string& filename);
-
-	VkShaderModule createShaderModule(const std::vector<char>& code);
 
 	void drawFrame();
 };
