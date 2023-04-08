@@ -13,6 +13,7 @@
 #include "PhysicalDeviceManager.h"
 #include "LogicalDeviceManager.h"
 #include "SwapChainManager.h"
+#include "SyncsManager.h"
 
 Render::Render()
 {
@@ -27,7 +28,7 @@ void Render::run()
 	physicalDeviceManager = new PhysicalDeviceManager(instanceManager->getInstance(), surfaceManager->getSurface(), deviceExtensions);
 	logicalDeviceManager = new LogicalDeviceManager(physicalDeviceManager->getDevice(), physicalDeviceManager->getQueueFamilyIndices(), enableValidationLayers, validationLayers, deviceExtensions);
 	swapChainManager = new SwapChainManager(physicalDeviceManager->getDevice(), physicalDeviceManager->getQueueFamilyIndices(), surfaceManager->getSurface(), logicalDeviceManager->getDevice(), windowManager);
-
+	syncsManager = new SyncsManager(logicalDeviceManager->getDevice());
 	initVulkan();
 	
 	while (!windowManager->isClosed())
@@ -40,6 +41,7 @@ void Render::run()
 
 	deinitVulkan();
 
+	delete syncsManager;
 	delete swapChainManager;
 	delete logicalDeviceManager;
 	delete physicalDeviceManager;
@@ -50,27 +52,16 @@ void Render::run()
 
 void Render::initVulkan()
 {
-	createRenderPass();
 	createGraphicsPipeline();
-	createFramebuffers();
 	createCommandPool();
 	createCommandBuffer();
-	createSyncObjects();
 }
 
 void Render::deinitVulkan()
 {
-	vkDestroySemaphore(logicalDeviceManager->getDevice(), imageAvailableSemaphore, nullptr);
-	vkDestroySemaphore(logicalDeviceManager->getDevice(), renderFinishedSemaphore, nullptr);
-	vkDestroyFence(logicalDeviceManager->getDevice(), inFlightFence, nullptr);
 	vkDestroyCommandPool(logicalDeviceManager->getDevice(), commandPool, nullptr);
-	for (auto framebuffer : swapChainFramebuffers)
-	{
-		vkDestroyFramebuffer(logicalDeviceManager->getDevice(), framebuffer, nullptr);
-	}
 	vkDestroyPipeline(logicalDeviceManager->getDevice(), graphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(logicalDeviceManager->getDevice(), pipelineLayout, nullptr);
-	vkDestroyRenderPass(logicalDeviceManager->getDevice(), renderPass, nullptr);
 }
 
 void Render::createGraphicsPipeline()
@@ -173,7 +164,7 @@ void Render::createGraphicsPipeline()
 	pipelineInfo.pColorBlendState = &colorBlending;
 	pipelineInfo.pDynamicState = &dynamicState;
 	pipelineInfo.layout = pipelineLayout;
-	pipelineInfo.renderPass = renderPass;
+	pipelineInfo.renderPass = swapChainManager->renderPass;
 	pipelineInfo.subpass = 0;
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
 	pipelineInfo.basePipelineIndex = -1; // Optional
@@ -224,79 +215,6 @@ VkShaderModule Render::createShaderModule(const std::vector<char>& code)
 	return shaderModule;
 }
 
-void Render::createRenderPass()
-{
-	VkAttachmentDescription colorAttachment{};
-	colorAttachment.format = swapChainManager->swapChainImageFormat;
-	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-
-	VkAttachmentReference colorAttachmentRef{};
-	colorAttachmentRef.attachment = 0;
-	colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-	VkSubpassDescription subpass{};
-	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	subpass.colorAttachmentCount = 1;
-	subpass.pColorAttachments = &colorAttachmentRef;
-
-	VkSubpassDependency dependency{};
-	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-	dependency.dstSubpass = 0;
-	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	dependency.srcAccessMask = 0;
-	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-
-	VkRenderPassCreateInfo renderPassInfo{};
-	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-	renderPassInfo.attachmentCount = 1;
-	renderPassInfo.pAttachments = &colorAttachment;
-	renderPassInfo.subpassCount = 1;
-	renderPassInfo.pSubpasses = &subpass;
-	renderPassInfo.dependencyCount = 1;
-	renderPassInfo.pDependencies = &dependency;
-
-	VkResult result = vkCreateRenderPass(logicalDeviceManager->getDevice(), &renderPassInfo, nullptr, &renderPass);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create render pass!");
-	}
-}
-
-void Render::createFramebuffers()
-{
-	swapChainFramebuffers.resize(swapChainManager->swapChainImageViews.size());
-
-	for (size_t i = 0; i < swapChainManager->swapChainImageViews.size(); i++)
-	{
-		VkImageView attachments[] =
-		{
-			swapChainManager->swapChainImageViews[i]
-		};
-
-		VkFramebufferCreateInfo framebufferInfo{};
-		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-		framebufferInfo.renderPass = renderPass;
-		framebufferInfo.attachmentCount = 1;
-		framebufferInfo.pAttachments = attachments;
-		framebufferInfo.width = swapChainManager->swapChainExtent.width;
-		framebufferInfo.height = swapChainManager->swapChainExtent.height;
-		framebufferInfo.layers = 1;
-
-		VkResult result = vkCreateFramebuffer(logicalDeviceManager->getDevice(), &framebufferInfo, nullptr, &swapChainFramebuffers[i]);
-		if (result != VK_SUCCESS)
-		{
-			throw std::runtime_error("Failed to create framebuffer!");
-		}
-	}
-}
-
 void Render::createCommandPool()
 {
 	const QueueFamilyIndices& queueFamilyIndices = physicalDeviceManager->getQueueFamilyIndices();
@@ -343,8 +261,8 @@ void Render::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIn
 
 	VkRenderPassBeginInfo renderPassInfo{};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassInfo.renderPass = renderPass;
-	renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex];
+	renderPassInfo.renderPass = swapChainManager->renderPass;
+	renderPassInfo.framebuffer = swapChainManager->swapChainFramebuffers[imageIndex];
 	renderPassInfo.renderArea.offset = { 0, 0 };
 	renderPassInfo.renderArea.extent = swapChainManager->swapChainExtent;
 
@@ -383,11 +301,11 @@ void Render::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIn
 
 void Render::drawFrame()
 {
-	vkWaitForFences(logicalDeviceManager->getDevice(), 1, &inFlightFence, VK_TRUE, UINT64_MAX);
-	vkResetFences(logicalDeviceManager->getDevice(), 1, &inFlightFence);
+	vkWaitForFences(logicalDeviceManager->getDevice(), 1, &syncsManager->inFlightFence, VK_TRUE, UINT64_MAX);
+	vkResetFences(logicalDeviceManager->getDevice(), 1, &syncsManager->inFlightFence);
 
 	uint32_t imageIndex;
-	vkAcquireNextImageKHR(logicalDeviceManager->getDevice(), swapChainManager->swapChain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+	vkAcquireNextImageKHR(logicalDeviceManager->getDevice(), swapChainManager->swapChain, UINT64_MAX, syncsManager->imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
 
 	vkResetCommandBuffer(commandBuffer, 0);
 
@@ -396,7 +314,7 @@ void Render::drawFrame()
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-	VkSemaphore waitSemaphores[] = { imageAvailableSemaphore };
+	VkSemaphore waitSemaphores[] = { syncsManager->imageAvailableSemaphore };
 	VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 	submitInfo.waitSemaphoreCount = 1;
 	submitInfo.pWaitSemaphores = waitSemaphores;
@@ -404,11 +322,11 @@ void Render::drawFrame()
 	submitInfo.commandBufferCount = 1;
 	submitInfo.pCommandBuffers = &commandBuffer;
 
-	VkSemaphore signalSemaphores[] = { renderFinishedSemaphore };
+	VkSemaphore signalSemaphores[] = { syncsManager->renderFinishedSemaphore };
 	submitInfo.signalSemaphoreCount = 1;
 	submitInfo.pSignalSemaphores = signalSemaphores;
 
-	VkResult result = vkQueueSubmit(logicalDeviceManager->getGraphicsQueue(), 1, &submitInfo, inFlightFence);
+	VkResult result = vkQueueSubmit(logicalDeviceManager->getGraphicsQueue(), 1, &submitInfo, syncsManager->inFlightFence);
 	if (result != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to submit draw command buffer!");
@@ -425,22 +343,4 @@ void Render::drawFrame()
 	presentInfo.pResults = nullptr; // Optional
 
 	vkQueuePresentKHR(logicalDeviceManager->getPresentQueue(), &presentInfo);
-}
-
-void Render::createSyncObjects()
-{
-	VkSemaphoreCreateInfo semaphoreInfo{};
-	semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-	VkFenceCreateInfo fenceInfo{};
-	fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-	fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
-	VkResult result1 = vkCreateSemaphore(logicalDeviceManager->getDevice(), &semaphoreInfo, nullptr, &imageAvailableSemaphore);
-	VkResult result2 = vkCreateSemaphore(logicalDeviceManager->getDevice(), &semaphoreInfo, nullptr, &renderFinishedSemaphore);
-	VkResult result3 = vkCreateFence(logicalDeviceManager->getDevice(), &fenceInfo, nullptr, &inFlightFence);
-	if (result1 != VK_SUCCESS || result2 != VK_SUCCESS || result3 != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create semaphores!");
-	}
 }

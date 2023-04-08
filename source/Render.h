@@ -22,6 +22,7 @@ class InstanceManager;
 class PhysicalDeviceManager;
 class LogicalDeviceManager;
 class SwapChainManager;
+class SyncsManager;
 
 class Render
 {
@@ -39,16 +40,13 @@ private:
 	PhysicalDeviceManager* physicalDeviceManager = nullptr;
 	LogicalDeviceManager* logicalDeviceManager = nullptr;
 	SwapChainManager* swapChainManager = nullptr;
+
+	SyncsManager* syncsManager = nullptr;
 	
 	VkPipelineLayout pipelineLayout;
-	VkRenderPass renderPass;
 	VkPipeline graphicsPipeline;
-	std::vector<VkFramebuffer> swapChainFramebuffers;
 	VkCommandPool commandPool;
 	VkCommandBuffer commandBuffer;
-	VkSemaphore imageAvailableSemaphore;
-	VkSemaphore renderFinishedSemaphore;
-	VkFence inFlightFence;
 
 	void initVulkan();
 	void deinitVulkan();
@@ -59,16 +57,10 @@ private:
 
 	VkShaderModule createShaderModule(const std::vector<char>& code);
 
-	void createRenderPass();
-
-	void createFramebuffers();
-
 	void createCommandPool();
 
 	void createCommandBuffer();
 	void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
 	void drawFrame();
-
-	void createSyncObjects();
 };

@@ -27,10 +27,17 @@ public:
 	std::vector<VkImage> swapChainImages;
 	VkFormat swapChainImageFormat;
 	VkExtent2D swapChainExtent;
-
 	std::vector<VkImageView> swapChainImageViews;
+	std::vector<VkFramebuffer> swapChainFramebuffers;
+
+	VkRenderPass renderPass;
 
 private:
+
+	void createSwapChain(VkPhysicalDevice physicalDevice, const QueueFamilyIndices& indices, VkSurfaceKHR surface);
+	void createImageViews();
+	void createRenderPass();
+	void createFramebuffer();
 
 	VkDevice logicalDevice;
 	WindowManager* windowManager;
