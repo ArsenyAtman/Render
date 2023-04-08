@@ -50,7 +50,6 @@ void Render::run()
 
 void Render::initVulkan()
 {
-	createImageViews();
 	createRenderPass();
 	createGraphicsPipeline();
 	createFramebuffers();
@@ -72,38 +71,6 @@ void Render::deinitVulkan()
 	vkDestroyPipeline(logicalDeviceManager->getDevice(), graphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(logicalDeviceManager->getDevice(), pipelineLayout, nullptr);
 	vkDestroyRenderPass(logicalDeviceManager->getDevice(), renderPass, nullptr);
-	for (VkImageView& imageView : swapChainImageViews)
-	{
-		vkDestroyImageView(logicalDeviceManager->getDevice(), imageView, nullptr);
-	}
-}
-
-void Render::createImageViews()
-{
-	swapChainImageViews.resize(swapChainManager->swapChainImages.size());
-	for (size_t i = 0; i < swapChainManager->swapChainImages.size(); ++i)
-	{
-		VkImageViewCreateInfo createInfo = VkImageViewCreateInfo();
-		createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-		createInfo.image = swapChainManager->swapChainImages[i];
-		createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-		createInfo.format = swapChainManager->swapChainImageFormat;
-		createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-		createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-		createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-		createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-		createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		createInfo.subresourceRange.baseMipLevel = 0;
-		createInfo.subresourceRange.levelCount = 1;
-		createInfo.subresourceRange.baseArrayLayer = 0;
-		createInfo.subresourceRange.layerCount = 1;
-
-		VkResult result = vkCreateImageView(logicalDeviceManager->getDevice(), &createInfo, nullptr, &swapChainImageViews[i]);
-		if (result != VK_SUCCESS)
-		{
-			throw std::runtime_error("Failed to create image views!");
-		}
-	}
 }
 
 void Render::createGraphicsPipeline()
@@ -304,13 +271,13 @@ void Render::createRenderPass()
 
 void Render::createFramebuffers()
 {
-	swapChainFramebuffers.resize(swapChainImageViews.size());
+	swapChainFramebuffers.resize(swapChainManager->swapChainImageViews.size());
 
-	for (size_t i = 0; i < swapChainImageViews.size(); i++)
+	for (size_t i = 0; i < swapChainManager->swapChainImageViews.size(); i++)
 	{
 		VkImageView attachments[] =
 		{
-			swapChainImageViews[i]
+			swapChainManager->swapChainImageViews[i]
 		};
 
 		VkFramebufferCreateInfo framebufferInfo{};

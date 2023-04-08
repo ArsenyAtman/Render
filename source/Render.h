@@ -40,7 +40,6 @@ private:
 	LogicalDeviceManager* logicalDeviceManager = nullptr;
 	SwapChainManager* swapChainManager = nullptr;
 	
-	std::vector<VkImageView> swapChainImageViews;
 	VkPipelineLayout pipelineLayout;
 	VkRenderPass renderPass;
 	VkPipeline graphicsPipeline;
@@ -53,8 +52,6 @@ private:
 
 	void initVulkan();
 	void deinitVulkan();
-
-	void createImageViews();
 
 	void createGraphicsPipeline();
 
