@@ -22,6 +22,8 @@ class InstanceManager;
 class PhysicalDeviceManager;
 class LogicalDeviceManager;
 class SwapChainManager;
+
+class CommandManager;
 class SyncsManager;
 
 class Render
@@ -41,12 +43,11 @@ private:
 	LogicalDeviceManager* logicalDeviceManager = nullptr;
 	SwapChainManager* swapChainManager = nullptr;
 
+	CommandManager* commandManager = nullptr;
 	SyncsManager* syncsManager = nullptr;
 	
 	VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;
-	VkCommandPool commandPool;
-	VkCommandBuffer commandBuffer;
 
 	void initVulkan();
 	void deinitVulkan();
@@ -56,11 +57,6 @@ private:
 	std::vector<char> readFile(const std::string& filename);
 
 	VkShaderModule createShaderModule(const std::vector<char>& code);
-
-	void createCommandPool();
-
-	void createCommandBuffer();
-	void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
 	void drawFrame();
 };
