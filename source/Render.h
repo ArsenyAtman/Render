@@ -32,8 +32,6 @@ public:
 
 	Render();
 
-	void run();
-
 private:
 
 	WindowManager* windowManager = nullptr;

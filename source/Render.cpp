@@ -14,11 +14,6 @@
 
 Render::Render()
 {
-	// ...
-}
-
-void Render::run()
-{
 	windowManager = new WindowManager(800, 600, "Vulkan Render");
 	instanceManager = new InstanceManager(windowManager, enableValidationLayers, validationLayers);
 	surfaceManager = new SurfaceManager(instanceManager->getInstance(), windowManager->getWindow());
@@ -28,7 +23,7 @@ void Render::run()
 	graphicsPipeline = new GraphicsPipeline(logicalDeviceManager->getDevice(), swapChainManager->renderPass);
 	commandManager = new CommandManager(logicalDeviceManager->getDevice(), physicalDeviceManager->getQueueFamilyIndices());
 	syncsManager = new SyncsManager(logicalDeviceManager->getDevice());
-	
+
 	while (!windowManager->isClosed())
 	{
 		windowManager->tick();

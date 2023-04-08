@@ -9,28 +9,18 @@
  * TODO: Check extension support.
  * TODO: Message callback in validation layers.
  * TODO: Device suitable checks.
- * 
- * TODO: WindowManager
- * TODO: InstanceManager
- * TODO: SurfaceManager
- * TODO: PhysicalDeviceManager
- * TODO: LogicalDeviceManager
- * TODO: SwapChainManager
- * TODO: ImageViewsManager
  */
 
 int main()
 {
-	Render render;
-
-	//try
+	try
 	{
-		render.run();
+		Render render;
 	}
-	//catch (const std::exception& e)
+	catch (const std::exception& e)
 	{
-		//std::cerr << e.what() << std::endl;
-		//return EXIT_FAILURE;
+		std::cerr << e.what() << std::endl;
+		return EXIT_FAILURE;
 	}
 
 	return EXIT_SUCCESS;
