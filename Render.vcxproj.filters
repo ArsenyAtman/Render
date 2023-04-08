@@ -25,6 +25,9 @@
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\CommandManager.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
     <ClCompile Include="source\InstanceManager.cpp">
       <Filter>source</Filter>
     </ClCompile>
@@ -43,14 +46,20 @@
     <ClCompile Include="source\SurfaceManager.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="source\WindowManager.cpp">
+    <ClCompile Include="source\SwapChainManager.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="source\SwapChainManager.cpp">
+    <ClCompile Include="source\SyncsManager.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\WindowManager.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\CommandManager.h">
+      <Filter>source</Filter>
+    </ClInclude>
     <ClInclude Include="source\InstanceManager.h">
       <Filter>source</Filter>
     </ClInclude>
@@ -66,10 +75,13 @@
     <ClInclude Include="source\SurfaceManager.h">
       <Filter>source</Filter>
     </ClInclude>
-    <ClInclude Include="source\WindowManager.h">
+    <ClInclude Include="source\SwapChainManager.h">
       <Filter>source</Filter>
     </ClInclude>
-    <ClInclude Include="source\SwapChainManager.h">
+    <ClInclude Include="source\SyncsManager.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\WindowManager.h">
       <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>

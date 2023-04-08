@@ -143,6 +143,7 @@
     <None Include="shaders\shader.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\CommandManager.cpp" />
     <ClCompile Include="source\InstanceManager.cpp" />
     <ClCompile Include="source\LogicalDeviceManager.cpp" />
     <ClCompile Include="source\main.cpp" />
@@ -150,15 +151,18 @@
     <ClCompile Include="source\Render.cpp" />
     <ClCompile Include="source\SurfaceManager.cpp" />
     <ClCompile Include="source\SwapChainManager.cpp" />
+    <ClCompile Include="source\SyncsManager.cpp" />
     <ClCompile Include="source\WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\CommandManager.h" />
     <ClInclude Include="source\InstanceManager.h" />
     <ClInclude Include="source\LogicalDeviceManager.h" />
     <ClInclude Include="source\PhysicalDeviceManager.h" />
     <ClInclude Include="source\Render.h" />
     <ClInclude Include="source\SurfaceManager.h" />
     <ClInclude Include="source\SwapChainManager.h" />
+    <ClInclude Include="source\SyncsManager.h" />
     <ClInclude Include="source\WindowManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
