@@ -15,13 +15,6 @@ public:
 	GraphicsPipeline(VkDevice logicalDevice, VkRenderPass renderPass, UniformBuffer* uniformBuffer);
 	virtual ~GraphicsPipeline();
 
-	void createDescriptorPool();
-	void createDescriptorSets(UniformBuffer* uniformBuffer);
-
-	VkDescriptorSetLayout descriptorSetLayout;
-	VkDescriptorPool descriptorPool;
-	std::vector<VkDescriptorSet> descriptorSets;
-
 	VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;
 
@@ -29,7 +22,7 @@ private:
 
 	VkDevice logicalDevice;
 
-	void createGraphicsPipeline(VkRenderPass renderPass);
+	void createGraphicsPipeline(VkRenderPass renderPass, UniformBuffer* uniformBuffer);
 
 	std::vector<char> readFile(const std::string& filename);
 

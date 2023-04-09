@@ -82,7 +82,7 @@ void Render::drawFrame()
 
 	uniformBuffer->update(0, swapChainManager->swapChainExtent);
 
-	commandManager->recordCommandBuffer(imageIndex, swapChainManager, graphicsPipeline, vertexBuffer);
+	commandManager->recordCommandBuffer(imageIndex, swapChainManager, graphicsPipeline, vertexBuffer, uniformBuffer);
 
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;

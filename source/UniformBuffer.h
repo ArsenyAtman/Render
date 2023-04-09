@@ -27,6 +27,13 @@ public:
     std::vector<VkDeviceMemory> uniformBuffersMemory;
     std::vector<void*> uniformBuffersMapped;
 
+    void createDescriptorPool();
+    void createDescriptorSets();
+
+    VkDescriptorSetLayout descriptorSetLayout;
+    VkDescriptorPool descriptorPool;
+    std::vector<VkDescriptorSet> descriptorSets;
+
 private:
 
     VkDevice logicalDevice;

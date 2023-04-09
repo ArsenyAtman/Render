@@ -8,6 +8,7 @@
 class SwapChainManager;
 class GraphicsPipeline;
 class VertexBuffer;
+class UniformBuffer;
 
 class CommandManager
 {
@@ -17,7 +18,7 @@ public:
 	CommandManager(VkDevice logicalDevice, const QueueFamilyIndices& queueFamilyIndices);
 	virtual ~CommandManager();
 
-	void recordCommandBuffer(uint32_t currentFrame, SwapChainManager* swapChainManager, GraphicsPipeline* graphicsPipeline, VertexBuffer* vertexBuffer);
+	void recordCommandBuffer(uint32_t currentFrame, SwapChainManager* swapChainManager, GraphicsPipeline* graphicsPipeline, VertexBuffer* vertexBuffer, UniformBuffer* uniformBuffer);
 
 	VkCommandPool commandPool;
 	VkCommandBuffer commandBuffer;
