@@ -1,12 +1,12 @@
 #pragma once
 
-#define GLFW_INCLUDE_VULKAN // Include Vulkan inside GLFW
-#include <GLFW/glfw3.h>
+#include <vulkan/vulkan.h>
 
 #include "PhysicalDeviceManager.h"
 #include "SwapChainManager.h"
 
 class SwapChainManager;
+class VertexBuffer;
 
 class CommandManager
 {
@@ -16,7 +16,7 @@ public:
 	CommandManager(VkDevice logicalDevice, const QueueFamilyIndices& queueFamilyIndices);
 	virtual ~CommandManager();
 
-	void recordCommandBuffer(uint32_t imageIndex, SwapChainManager* swapChainManager, VkPipeline graphicsPipeline);
+	void recordCommandBuffer(uint32_t imageIndex, SwapChainManager* swapChainManager, VkPipeline graphicsPipeline, VertexBuffer* vertexBuffer);
 
 	VkCommandPool commandPool;
 	VkCommandBuffer commandBuffer;

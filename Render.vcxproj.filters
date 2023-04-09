@@ -58,6 +58,12 @@
     <ClCompile Include="source\GraphicsPipeline.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\Vertex.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VertexBuffer.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CommandManager.h">
@@ -88,6 +94,12 @@
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="source\GraphicsPipeline.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Vertex.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\VertexBuffer.h">
       <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>

@@ -9,6 +9,9 @@
  * TODO: Check extension support.
  * TODO: Message callback in validation layers.
  * TODO: Device suitable checks.
+ * 
+ * TODO: Mipmaps
+ * TODO: Multisampling
  */
 
 int main()

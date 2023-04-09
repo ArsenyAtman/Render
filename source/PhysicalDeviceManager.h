@@ -3,8 +3,7 @@
 #include <optional>
 #include <vector>
 
-#define GLFW_INCLUDE_VULKAN // Include Vulkan inside GLFW
-#include <GLFW/glfw3.h>
+#include <vulkan/vulkan.h>
 
 struct QueueFamilyIndices
 {

@@ -1,11 +1,8 @@
 #pragma once
 
 #include <vector>
-#include <optional>
-#include <string>
 
-#define GLFW_INCLUDE_VULKAN // Include Vulkan inside GLFW
-#include <GLFW/glfw3.h>
+#include <vulkan/vulkan.h>
 
 #if NDEBUG
 const bool enableValidationLayers = true;
@@ -21,6 +18,7 @@ class SurfaceManager;
 class InstanceManager;
 class PhysicalDeviceManager;
 class LogicalDeviceManager;
+class VertexBuffer;
 class SwapChainManager;
 class GraphicsPipeline;
 class CommandManager;
@@ -39,6 +37,7 @@ private:
 	InstanceManager* instanceManager = nullptr;
 	PhysicalDeviceManager* physicalDeviceManager = nullptr;
 	LogicalDeviceManager* logicalDeviceManager = nullptr;
+	VertexBuffer* vertexBuffer = nullptr;
 	SwapChainManager* swapChainManager = nullptr;
 	GraphicsPipeline* graphicsPipeline = nullptr;
 	CommandManager* commandManager = nullptr;

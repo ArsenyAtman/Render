@@ -153,6 +153,8 @@
     <ClCompile Include="source\SurfaceManager.cpp" />
     <ClCompile Include="source\SwapChainManager.cpp" />
     <ClCompile Include="source\SyncsManager.cpp" />
+    <ClCompile Include="source\Vertex.cpp" />
+    <ClCompile Include="source\VertexBuffer.cpp" />
     <ClCompile Include="source\WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -165,6 +167,8 @@
     <ClInclude Include="source\SurfaceManager.h" />
     <ClInclude Include="source\SwapChainManager.h" />
     <ClInclude Include="source\SyncsManager.h" />
+    <ClInclude Include="source\Vertex.h" />
+    <ClInclude Include="source\VertexBuffer.h" />
     <ClInclude Include="source\WindowManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

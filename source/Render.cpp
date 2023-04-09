@@ -9,16 +9,27 @@
 #include "LogicalDeviceManager.h"
 #include "SwapChainManager.h"
 #include "GraphicsPipeline.h"
+#include "VertexBuffer.h"
 #include "CommandManager.h"
 #include "SyncsManager.h"
 
+#include "Vertex.h"
+
 Render::Render()
 {
+	const std::vector<Vertex> vertices =
+	{
+	{{0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}},
+	{{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+	{{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+	};
+
 	windowManager = new WindowManager(800, 600, "Vulkan Render");
 	instanceManager = new InstanceManager(windowManager, enableValidationLayers, validationLayers);
 	surfaceManager = new SurfaceManager(instanceManager->getInstance(), windowManager->getWindow());
 	physicalDeviceManager = new PhysicalDeviceManager(instanceManager->getInstance(), surfaceManager->getSurface(), deviceExtensions);
 	logicalDeviceManager = new LogicalDeviceManager(physicalDeviceManager->getDevice(), physicalDeviceManager->getQueueFamilyIndices(), enableValidationLayers, validationLayers, deviceExtensions);
+	vertexBuffer = new VertexBuffer(logicalDeviceManager->getDevice(), physicalDeviceManager->getDevice(), vertices);
 	swapChainManager = new SwapChainManager(physicalDeviceManager->getDevice(), physicalDeviceManager->getQueueFamilyIndices(), surfaceManager->getSurface(), logicalDeviceManager->getDevice(), windowManager);
 	graphicsPipeline = new GraphicsPipeline(logicalDeviceManager->getDevice(), swapChainManager->renderPass);
 	commandManager = new CommandManager(logicalDeviceManager->getDevice(), physicalDeviceManager->getQueueFamilyIndices());
@@ -36,6 +47,7 @@ Render::Render()
 	delete commandManager;
 	delete graphicsPipeline;
 	delete swapChainManager;
+	delete vertexBuffer;
 	delete logicalDeviceManager;
 	delete physicalDeviceManager;
 	delete surfaceManager;
@@ -51,7 +63,7 @@ void Render::drawFrame()
 	uint32_t imageIndex;
 	vkAcquireNextImageKHR(logicalDeviceManager->getDevice(), swapChainManager->swapChain, UINT64_MAX, syncsManager->imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
 
-	commandManager->recordCommandBuffer(imageIndex, swapChainManager, graphicsPipeline->graphicsPipeline);
+	commandManager->recordCommandBuffer(imageIndex, swapChainManager, graphicsPipeline->graphicsPipeline, vertexBuffer);
 
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;

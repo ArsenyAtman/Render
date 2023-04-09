@@ -2,6 +2,8 @@
 
 #include <stdexcept>
 
+#include "VertexBuffer.h"
+
 CommandManager::CommandManager(VkDevice logicalDevice, const QueueFamilyIndices& queueFamilyIndices)
 {
 	this->logicalDevice = logicalDevice;
@@ -44,7 +46,7 @@ void CommandManager::createCommandBuffer()
 	}
 }
 
-void CommandManager::recordCommandBuffer(uint32_t imageIndex, SwapChainManager* swapChainManager,VkPipeline graphicsPipeline)
+void CommandManager::recordCommandBuffer(uint32_t imageIndex, SwapChainManager* swapChainManager,VkPipeline graphicsPipeline, VertexBuffer* vertexBuffer)
 {
 	vkResetCommandBuffer(commandBuffer, 0);
 
@@ -88,7 +90,11 @@ void CommandManager::recordCommandBuffer(uint32_t imageIndex, SwapChainManager* 
 	scissor.extent = swapChainManager->swapChainExtent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-	vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+	VkBuffer vertexBuffers[] = { vertexBuffer->vertexBuffer };
+	VkDeviceSize offsets[] = { 0 };
+	vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+
+	vkCmdDraw(commandBuffer, vertexBuffer->vertexBufferSize, 1, 0, 0);
 
 	vkCmdEndRenderPass(commandBuffer);
 
