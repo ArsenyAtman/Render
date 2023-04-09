@@ -1,6 +1,8 @@
 #include "Render.h"
 
 #include <stdexcept>
+#include <chrono>
+#include <iostream>
 
 #include "WindowManager.h"
 #include "SurfaceManager.h"
@@ -10,6 +12,7 @@
 #include "SwapChainManager.h"
 #include "GraphicsPipeline.h"
 #include "VertexBuffer.h"
+#include "UniformBuffer.h"
 #include "CommandManager.h"
 #include "SyncsManager.h"
 
@@ -22,6 +25,7 @@ Render::Render()
 		{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
 		{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
 		{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+
 		{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}},
 		{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
 		{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
@@ -33,15 +37,24 @@ Render::Render()
 	physicalDeviceManager = new PhysicalDeviceManager(instanceManager->getInstance(), surfaceManager->getSurface(), deviceExtensions);
 	logicalDeviceManager = new LogicalDeviceManager(physicalDeviceManager->getDevice(), physicalDeviceManager->getQueueFamilyIndices(), enableValidationLayers, validationLayers, deviceExtensions);
 	vertexBuffer = new VertexBuffer(logicalDeviceManager->getDevice(), physicalDeviceManager->getDevice(), vertices);
+	uniformBuffer = new UniformBuffer(logicalDeviceManager->getDevice(), physicalDeviceManager->getDevice());
 	swapChainManager = new SwapChainManager(physicalDeviceManager->getDevice(), physicalDeviceManager->getQueueFamilyIndices(), surfaceManager->getSurface(), logicalDeviceManager->getDevice(), windowManager);
-	graphicsPipeline = new GraphicsPipeline(logicalDeviceManager->getDevice(), swapChainManager->renderPass);
+	graphicsPipeline = new GraphicsPipeline(logicalDeviceManager->getDevice(), swapChainManager->renderPass, uniformBuffer);
 	commandManager = new CommandManager(logicalDeviceManager->getDevice(), physicalDeviceManager->getQueueFamilyIndices());
 	syncsManager = new SyncsManager(logicalDeviceManager->getDevice());
 
 	while (!windowManager->isClosed())
 	{
+		static std::chrono::steady_clock::time_point startTime = std::chrono::high_resolution_clock::now();
+
 		windowManager->tick();
 		drawFrame();
+
+		static std::chrono::steady_clock::time_point endTime = std::chrono::high_resolution_clock::now();
+
+		float frameTime = std::chrono::duration<float, std::chrono::milliseconds::period>(endTime - startTime).count();
+		//std::cout << "Frame time: " << frameTime << std::endl;
+		//std::cout << "FPS: " << 1000.0f / frameTime << std::endl;
 	}
 
 	vkDeviceWaitIdle(logicalDeviceManager->getDevice());
@@ -50,6 +63,7 @@ Render::Render()
 	delete commandManager;
 	delete graphicsPipeline;
 	delete swapChainManager;
+	delete uniformBuffer;
 	delete vertexBuffer;
 	delete logicalDeviceManager;
 	delete physicalDeviceManager;
@@ -66,7 +80,9 @@ void Render::drawFrame()
 	uint32_t imageIndex;
 	vkAcquireNextImageKHR(logicalDeviceManager->getDevice(), swapChainManager->swapChain, UINT64_MAX, syncsManager->imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
 
-	commandManager->recordCommandBuffer(imageIndex, swapChainManager, graphicsPipeline->graphicsPipeline, vertexBuffer);
+	uniformBuffer->update(0, swapChainManager->swapChainExtent);
+
+	commandManager->recordCommandBuffer(imageIndex, swapChainManager, graphicsPipeline, vertexBuffer);
 
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -97,7 +113,6 @@ void Render::drawFrame()
 	presentInfo.swapchainCount = 1;
 	presentInfo.pSwapchains = swapChains;
 	presentInfo.pImageIndices = &imageIndex;
-	presentInfo.pResults = nullptr; // Optional
 
 	vkQueuePresentKHR(logicalDeviceManager->getPresentQueue(), &presentInfo);
 }

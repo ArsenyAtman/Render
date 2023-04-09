@@ -5,13 +5,22 @@
 
 #include <vulkan/vulkan.h>
 
+class UniformBuffer;
+
 class GraphicsPipeline
 {
 
 public:
 
-	GraphicsPipeline(VkDevice logicalDevice, VkRenderPass renderPass);
+	GraphicsPipeline(VkDevice logicalDevice, VkRenderPass renderPass, UniformBuffer* uniformBuffer);
 	virtual ~GraphicsPipeline();
+
+	void createDescriptorPool();
+	void createDescriptorSets(UniformBuffer* uniformBuffer);
+
+	VkDescriptorSetLayout descriptorSetLayout;
+	VkDescriptorPool descriptorPool;
+	std::vector<VkDescriptorSet> descriptorSets;
 
 	VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;

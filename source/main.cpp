@@ -10,6 +10,9 @@
  * TODO: Message callback in validation layers.
  * TODO: Device suitable checks.
  * 
+ * TODO: Frames in flight
+ * 
+ * TODO: Swap chain recreation
  * TODO: Staging buffer
  * TODO: Index buffer
  * TODO: Mipmaps

@@ -6,6 +6,7 @@
 #include "SwapChainManager.h"
 
 class SwapChainManager;
+class GraphicsPipeline;
 class VertexBuffer;
 
 class CommandManager
@@ -16,7 +17,7 @@ public:
 	CommandManager(VkDevice logicalDevice, const QueueFamilyIndices& queueFamilyIndices);
 	virtual ~CommandManager();
 
-	void recordCommandBuffer(uint32_t imageIndex, SwapChainManager* swapChainManager, VkPipeline graphicsPipeline, VertexBuffer* vertexBuffer);
+	void recordCommandBuffer(uint32_t currentFrame, SwapChainManager* swapChainManager, GraphicsPipeline* graphicsPipeline, VertexBuffer* vertexBuffer);
 
 	VkCommandPool commandPool;
 	VkCommandBuffer commandBuffer;

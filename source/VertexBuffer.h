@@ -20,9 +20,5 @@ public:
 	VkDeviceMemory vertexBufferMemory;
 
 	uint32_t vertexBufferSize;
-
-private:
-
-	uint32_t findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
 };
 

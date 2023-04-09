@@ -19,6 +19,7 @@ class InstanceManager;
 class PhysicalDeviceManager;
 class LogicalDeviceManager;
 class VertexBuffer;
+class UniformBuffer;
 class SwapChainManager;
 class GraphicsPipeline;
 class CommandManager;
@@ -38,6 +39,7 @@ private:
 	PhysicalDeviceManager* physicalDeviceManager = nullptr;
 	LogicalDeviceManager* logicalDeviceManager = nullptr;
 	VertexBuffer* vertexBuffer = nullptr;
+	UniformBuffer* uniformBuffer = nullptr;
 	SwapChainManager* swapChainManager = nullptr;
 	GraphicsPipeline* graphicsPipeline = nullptr;
 	CommandManager* commandManager = nullptr;

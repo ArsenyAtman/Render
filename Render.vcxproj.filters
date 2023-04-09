@@ -64,6 +64,12 @@
     <ClCompile Include="source\VertexBuffer.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\UniformBuffer.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Helpers.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CommandManager.h">
@@ -100,6 +106,12 @@
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="source\VertexBuffer.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UniformBuffer.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Helpers.h">
       <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>
