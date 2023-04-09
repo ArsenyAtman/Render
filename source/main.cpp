@@ -10,6 +10,8 @@
  * TODO: Message callback in validation layers.
  * TODO: Device suitable checks.
  * 
+ * TODO: Staging buffer
+ * TODO: Index buffer
  * TODO: Mipmaps
  * TODO: Multisampling
  */
