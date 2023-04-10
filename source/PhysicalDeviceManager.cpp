@@ -44,7 +44,11 @@ bool PhysicalDeviceManager::isDeviceSuitable(VkPhysicalDevice device, VkSurfaceK
 	QueueFamilyIndices indices = findQueueFamilies(device, surface);
 	bool extensionsSupported = checkDeviceExtensionSupport(device, deviceExtensions);
 	bool swapChainAdequate = supportsSwapChain(device, surface);
-	return indices.isComplete() && extensionsSupported && swapChainAdequate;
+
+	VkPhysicalDeviceFeatures supportedFeatures;
+	vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
+
+	return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
 }
 
 bool PhysicalDeviceManager::checkDeviceExtensionSupport(VkPhysicalDevice device, const std::vector<const char*>& deviceExtensions)

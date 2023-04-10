@@ -11,7 +11,7 @@ InstanceManager::InstanceManager(WindowManager* windowManager, bool withValidati
 		throw std::runtime_error("Validation layers are not available!");
 	}
 
-	VkApplicationInfo applicationInfo;
+	VkApplicationInfo applicationInfo = VkApplicationInfo();
 	applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	applicationInfo.pApplicationName = "Vulkan Render";
 	applicationInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);

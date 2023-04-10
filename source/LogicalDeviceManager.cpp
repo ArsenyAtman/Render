@@ -20,6 +20,7 @@ LogicalDeviceManager::LogicalDeviceManager(VkPhysicalDevice physicalDevice, cons
 	}
 
 	VkPhysicalDeviceFeatures deviceFeatures = VkPhysicalDeviceFeatures();
+	deviceFeatures.samplerAnisotropy = VK_TRUE;
 
 	VkDeviceCreateInfo createInfo = VkDeviceCreateInfo();
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;

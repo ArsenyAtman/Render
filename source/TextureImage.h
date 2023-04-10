@@ -18,6 +18,8 @@ public:
 
 	VkImageView textureImageView;
 
+	VkSampler textureSampler;
+
 private:
 
 	VkDevice logicalDevice;
