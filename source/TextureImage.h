@@ -20,6 +20,8 @@ public:
 
 	VkSampler textureSampler;
 
+	VkDescriptorSetLayoutBinding samplerLayoutBinding;
+
 private:
 
 	VkDevice logicalDevice;

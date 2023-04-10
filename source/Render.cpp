@@ -16,6 +16,7 @@
 #include "CommandManager.h"
 #include "SyncsManager.h"
 #include "TextureImage.h"
+#include "DescriptorsManager.h"
 
 #include "Vertex.h"
 
@@ -23,26 +24,27 @@ Render::Render()
 {
 	const std::vector<Vertex> vertices =
 	{
-		{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-		{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-		{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+		{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+		{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+		{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
 
-		{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}},
-		{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-		{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+		{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
+		{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+		{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}}
 	};
 
-	windowManager = new WindowManager(800, 600, "Vulkan Render");
+	windowManager = new WindowManager(1024, 720, "Vulkan Render");
 	instanceManager = new InstanceManager(windowManager, enableValidationLayers, validationLayers);
 	surfaceManager = new SurfaceManager(instanceManager->getInstance(), windowManager->getWindow());
 	physicalDeviceManager = new PhysicalDeviceManager(instanceManager->getInstance(), surfaceManager->getSurface(), deviceExtensions);
 	logicalDeviceManager = new LogicalDeviceManager(physicalDeviceManager->getDevice(), physicalDeviceManager->getQueueFamilyIndices(), enableValidationLayers, validationLayers, deviceExtensions);
+	commandManager = new CommandManager(logicalDeviceManager->getDevice(), physicalDeviceManager->getQueueFamilyIndices());
 	vertexBuffer = new VertexBuffer(logicalDeviceManager->getDevice(), physicalDeviceManager->getDevice(), vertices);
 	uniformBuffer = new UniformBuffer(logicalDeviceManager->getDevice(), physicalDeviceManager->getDevice());
-	swapChainManager = new SwapChainManager(physicalDeviceManager->getDevice(), physicalDeviceManager->getQueueFamilyIndices(), surfaceManager->getSurface(), logicalDeviceManager->getDevice(), windowManager);
-	graphicsPipeline = new GraphicsPipeline(logicalDeviceManager->getDevice(), swapChainManager->renderPass, uniformBuffer);
-	commandManager = new CommandManager(logicalDeviceManager->getDevice(), physicalDeviceManager->getQueueFamilyIndices());
 	textureImage = new TextureImage(logicalDeviceManager->getDevice(), physicalDeviceManager->getDevice(), logicalDeviceManager->getGraphicsQueue(), commandManager->commandPool);
+	descriptorsManager = new DescriptorsManager(logicalDeviceManager->getDevice(), uniformBuffer, textureImage);
+	swapChainManager = new SwapChainManager(physicalDeviceManager->getDevice(), physicalDeviceManager->getQueueFamilyIndices(), surfaceManager->getSurface(), logicalDeviceManager->getDevice(), windowManager);
+	graphicsPipeline = new GraphicsPipeline(logicalDeviceManager->getDevice(), swapChainManager->renderPass, descriptorsManager);
 	syncsManager = new SyncsManager(logicalDeviceManager->getDevice());
 
 	while (!windowManager->isClosed())
@@ -62,12 +64,13 @@ Render::Render()
 	vkDeviceWaitIdle(logicalDeviceManager->getDevice());
 
 	delete syncsManager;
-	delete commandManager;
 	delete graphicsPipeline;
 	delete swapChainManager;
+	delete descriptorsManager;
 	delete textureImage;
 	delete uniformBuffer;
 	delete vertexBuffer;
+	delete commandManager;
 	delete logicalDeviceManager;
 	delete physicalDeviceManager;
 	delete surfaceManager;
@@ -85,7 +88,7 @@ void Render::drawFrame()
 
 	uniformBuffer->update(0, swapChainManager->swapChainExtent);
 
-	commandManager->recordCommandBuffer(imageIndex, swapChainManager, graphicsPipeline, vertexBuffer, uniformBuffer);
+	commandManager->recordCommandBuffer(imageIndex, swapChainManager, graphicsPipeline, vertexBuffer, descriptorsManager);
 
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;

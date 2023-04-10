@@ -73,6 +73,9 @@
     <ClCompile Include="source\TextureImage.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\DescriptorsManager.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CommandManager.h">
@@ -118,6 +121,9 @@
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="source\TextureImage.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\DescriptorsManager.h">
       <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>

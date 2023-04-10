@@ -21,6 +21,7 @@ class GraphicsPipeline;
 class CommandManager;
 class SyncsManager;
 class TextureImage;
+class DescriptorsManager;
 
 class Render
 {
@@ -38,6 +39,7 @@ private:
 	VertexBuffer* vertexBuffer = nullptr;
 	UniformBuffer* uniformBuffer = nullptr;
 	TextureImage* textureImage = nullptr;
+	DescriptorsManager* descriptorsManager = nullptr;
 	SwapChainManager* swapChainManager = nullptr;
 	GraphicsPipeline* graphicsPipeline = nullptr;
 	CommandManager* commandManager = nullptr;

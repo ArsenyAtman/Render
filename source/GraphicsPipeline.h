@@ -5,14 +5,14 @@
 
 #include <vulkan/vulkan.h>
 
-class UniformBuffer;
+class DescriptorsManager;
 
 class GraphicsPipeline
 {
 
 public:
 
-	GraphicsPipeline(VkDevice logicalDevice, VkRenderPass renderPass, UniformBuffer* uniformBuffer);
+	GraphicsPipeline(VkDevice logicalDevice, VkRenderPass renderPass, DescriptorsManager* descriptorsManager);
 	virtual ~GraphicsPipeline();
 
 	VkPipelineLayout pipelineLayout;
@@ -22,7 +22,7 @@ private:
 
 	VkDevice logicalDevice;
 
-	void createGraphicsPipeline(VkRenderPass renderPass, UniformBuffer* uniformBuffer);
+	void createGraphicsPipeline(VkRenderPass renderPass, DescriptorsManager* descriptorsManager);
 
 	std::vector<char> readFile(const std::string& filename);
 

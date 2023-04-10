@@ -18,7 +18,7 @@ TextureImage::TextureImage(VkDevice logicalDevice, VkPhysicalDevice physicalDevi
 	int textureHeight;
 	int textureChannels;
 
-	stbi_uc* pixels = stbi_load("textures/monstera.jpg", &textureWidth, &textureHeight, &textureChannels, STBI_rgb_alpha);
+	stbi_uc* pixels = stbi_load("textures/capybara.jpg", &textureWidth, &textureHeight, &textureChannels, STBI_rgb_alpha);
 	VkDeviceSize imageSize = textureWidth * textureHeight * 4;
 
 	if (!pixels)
@@ -73,6 +73,13 @@ TextureImage::TextureImage(VkDevice logicalDevice, VkPhysicalDevice physicalDevi
 	{
 		throw std::runtime_error("failed to create texture sampler!");
 	}
+
+	samplerLayoutBinding = VkDescriptorSetLayoutBinding();
+	samplerLayoutBinding.binding = 1;
+	samplerLayoutBinding.descriptorCount = 1;
+	samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	samplerLayoutBinding.pImmutableSamplers = nullptr;
+	samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 }
 
 TextureImage::~TextureImage()

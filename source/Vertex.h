@@ -12,8 +12,9 @@ public:
 
 	glm::vec2 pos;
 	glm::vec3 color;
+	glm::vec2 textureCoordinate;
 
 	static VkVertexInputBindingDescription getBindingDescription();
-	static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions();
+	static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescriptions();
 };
 

@@ -17,6 +17,9 @@
  * TODO: Index buffer
  * TODO: Mipmaps
  * TODO: Multisampling
+ * 
+ * TODO: Automatic shader compilation
+ * TODO: ini settings
  */
 
 int main()

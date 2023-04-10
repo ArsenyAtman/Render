@@ -4,18 +4,18 @@
 #include <fstream>
 
 #include "Vertex.h"
-#include "UniformBuffer.h"
+#include "DescriptorsManager.h"
 
 namespace
 {
 	const int MAX_FRAMES_IN_FLIGHT = 1;
 }
 
-GraphicsPipeline::GraphicsPipeline(VkDevice logicalDevice, VkRenderPass renderPass, UniformBuffer* uniformBuffer)
+GraphicsPipeline::GraphicsPipeline(VkDevice logicalDevice, VkRenderPass renderPass, DescriptorsManager* descriptorsManager)
 {
 	this->logicalDevice = logicalDevice;
 
-	createGraphicsPipeline(renderPass, uniformBuffer);
+	createGraphicsPipeline(renderPass, descriptorsManager);
 }
 
 GraphicsPipeline::~GraphicsPipeline()
@@ -24,7 +24,7 @@ GraphicsPipeline::~GraphicsPipeline()
 	vkDestroyPipelineLayout(logicalDevice, pipelineLayout, nullptr);
 }
 
-void GraphicsPipeline::createGraphicsPipeline(VkRenderPass renderPass, UniformBuffer* uniformBuffer)
+void GraphicsPipeline::createGraphicsPipeline(VkRenderPass renderPass, DescriptorsManager* descriptorsManager)
 {
 	std::vector<char> vertShaderCode = readFile("shaders/vert.spv");
 	std::vector<char> fragShaderCode = readFile("shaders/frag.spv");
@@ -51,7 +51,7 @@ void GraphicsPipeline::createGraphicsPipeline(VkRenderPass renderPass, UniformBu
 	vertexInputInfo.vertexBindingDescriptionCount = 0;
 	vertexInputInfo.vertexAttributeDescriptionCount = 0;
 	VkVertexInputBindingDescription bindingDescription = Vertex::getBindingDescription();
-	std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions = Vertex::getAttributeDescriptions();
+	std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions = Vertex::getAttributeDescriptions();
 	vertexInputInfo.vertexBindingDescriptionCount = 1;
 	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
 	vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
@@ -110,7 +110,7 @@ void GraphicsPipeline::createGraphicsPipeline(VkRenderPass renderPass, UniformBu
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	pipelineLayoutInfo.setLayoutCount = 1;
-	pipelineLayoutInfo.pSetLayouts = &uniformBuffer->descriptorSetLayout;
+	pipelineLayoutInfo.pSetLayouts = &descriptorsManager->descriptorSetLayout;
 	pipelineLayoutInfo.pushConstantRangeCount = 0;
 
 	VkResult result2 = vkCreatePipelineLayout(logicalDevice, &pipelineLayoutInfo, nullptr, &pipelineLayout);
