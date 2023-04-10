@@ -9,6 +9,8 @@
 
 TextureImage::TextureImage(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool)
 {
+	this->logicalDevice = logicalDevice;
+
 	VkBuffer stagingBuffer;
 	VkDeviceMemory stagingBufferMemory;
 
@@ -42,10 +44,14 @@ TextureImage::TextureImage(VkDevice logicalDevice, VkPhysicalDevice physicalDevi
 
 	vkDestroyBuffer(logicalDevice, stagingBuffer, nullptr);
 	vkFreeMemory(logicalDevice, stagingBufferMemory, nullptr);
+
+	textureImageView = Helpers::createImageView(logicalDevice, textureImage, VK_FORMAT_R8G8B8A8_SRGB);
 }
 
 TextureImage::~TextureImage()
 {
+	vkDestroyImageView(logicalDevice, textureImageView, nullptr);
+
 	vkDestroyImage(logicalDevice, textureImage, nullptr);
 	vkFreeMemory(logicalDevice, textureImageMemory, nullptr);
 }

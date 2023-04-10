@@ -16,6 +16,8 @@ public:
 	VkImage textureImage;
 	VkDeviceMemory textureImageMemory;
 
+	VkImageView textureImageView;
+
 private:
 
 	VkDevice logicalDevice;
