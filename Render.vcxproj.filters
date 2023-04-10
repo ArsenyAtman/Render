@@ -70,6 +70,9 @@
     <ClCompile Include="source\Helpers.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\TextureImage.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CommandManager.h">
@@ -112,6 +115,9 @@
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="source\Helpers.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\TextureImage.h">
       <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>

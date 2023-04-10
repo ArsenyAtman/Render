@@ -15,6 +15,7 @@
 #include "UniformBuffer.h"
 #include "CommandManager.h"
 #include "SyncsManager.h"
+#include "TextureImage.h"
 
 #include "Vertex.h"
 
@@ -41,6 +42,7 @@ Render::Render()
 	swapChainManager = new SwapChainManager(physicalDeviceManager->getDevice(), physicalDeviceManager->getQueueFamilyIndices(), surfaceManager->getSurface(), logicalDeviceManager->getDevice(), windowManager);
 	graphicsPipeline = new GraphicsPipeline(logicalDeviceManager->getDevice(), swapChainManager->renderPass, uniformBuffer);
 	commandManager = new CommandManager(logicalDeviceManager->getDevice(), physicalDeviceManager->getQueueFamilyIndices());
+	textureImage = new TextureImage(logicalDeviceManager->getDevice(), physicalDeviceManager->getDevice(), logicalDeviceManager->getGraphicsQueue(), commandManager->commandPool);
 	syncsManager = new SyncsManager(logicalDeviceManager->getDevice());
 
 	while (!windowManager->isClosed())
@@ -63,6 +65,7 @@ Render::Render()
 	delete commandManager;
 	delete graphicsPipeline;
 	delete swapChainManager;
+	delete textureImage;
 	delete uniformBuffer;
 	delete vertexBuffer;
 	delete logicalDeviceManager;
