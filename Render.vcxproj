@@ -144,6 +144,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\CommandManager.cpp" />
+    <ClCompile Include="source\DepthBuffer.cpp" />
     <ClCompile Include="source\DescriptorsManager.cpp" />
     <ClCompile Include="source\GraphicsPipeline.cpp" />
     <ClCompile Include="source\Helpers.cpp" />
@@ -163,6 +164,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CommandManager.h" />
+    <ClInclude Include="source\DepthBuffer.h" />
     <ClInclude Include="source\DescriptorsManager.h" />
     <ClInclude Include="source\GraphicsPipeline.h" />
     <ClInclude Include="source\Helpers.h" />

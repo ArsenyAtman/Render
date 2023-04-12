@@ -13,14 +13,17 @@ struct SwapChainSupportDetails
 
 class WindowManager;
 struct QueueFamilyIndices;
+class DepthBuffer;
 
 class SwapChainManager
 {
 
 public:
 
-	SwapChainManager(VkPhysicalDevice physicalDevice, const QueueFamilyIndices& indices, VkSurfaceKHR surface, VkDevice logicalDevice, WindowManager* windowManager);
+	SwapChainManager(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool, const QueueFamilyIndices& indices, VkSurfaceKHR surface, WindowManager* windowManager);
 	virtual ~SwapChainManager();
+
+	void recreateSwapChain();
 
 	VkSwapchainKHR swapChain;
 	std::vector<VkImage> swapChainImages;
@@ -31,12 +34,14 @@ public:
 
 	VkRenderPass renderPass;
 
+	DepthBuffer* depthBuffer;
+
 private:
 
-	void createSwapChain(VkPhysicalDevice physicalDevice, const QueueFamilyIndices& indices, VkSurfaceKHR surface);
+	void createSwapChain(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool, const QueueFamilyIndices& indices, VkSurfaceKHR surface);
 	void createImageViews();
-	void createRenderPass();
-	void createFramebuffer();
+	void createRenderPass(VkPhysicalDevice physicalDevice);
+	void createFramebuffer(VkImageView depthImageView);
 
 	VkDevice logicalDevice;
 	WindowManager* windowManager;
@@ -46,5 +51,4 @@ private:
 	VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 	VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 	VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
-	void createSwapChain();
 };

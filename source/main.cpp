@@ -12,6 +12,7 @@
  * 
  * TODO: Frames in flight
  * TODO: Swap chain recreation
+ * TODO: Swap chain recreation of depth buffer
  * 
  * TODO: Staging buffer
  * TODO: Index buffer
