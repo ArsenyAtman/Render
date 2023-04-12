@@ -364,3 +364,6 @@ FodyWeavers.xsd
 
 # Compiled shaders
 *.spv
+
+# Obj models
+!models/*.obj

@@ -17,37 +17,21 @@
 #include "SyncsManager.h"
 #include "TextureImage.h"
 #include "DescriptorsManager.h"
+#include "ModelLoader.h"
 
 #include "Vertex.h"
 
 Render::Render()
 {
-	const std::vector<Vertex> vertices =
-	{
-		{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-		{{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-		{{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+	modelLoader = new ModelLoader();
 
-		{{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
-		{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-		{{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-
-		{{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-		{{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-		{{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-
-		{{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
-		{{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-		{{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}}
-	};
-
-	windowManager = new WindowManager(1024, 720, "Vulkan Render");
+	windowManager = new WindowManager(1280, 720, "Vulkan Render");
 	instanceManager = new InstanceManager(windowManager, enableValidationLayers, validationLayers);
 	surfaceManager = new SurfaceManager(instanceManager->getInstance(), windowManager->getWindow());
 	physicalDeviceManager = new PhysicalDeviceManager(instanceManager->getInstance(), surfaceManager->getSurface(), deviceExtensions);
 	logicalDeviceManager = new LogicalDeviceManager(physicalDeviceManager->getDevice(), physicalDeviceManager->getQueueFamilyIndices(), enableValidationLayers, validationLayers, deviceExtensions);
 	commandManager = new CommandManager(logicalDeviceManager->getDevice(), physicalDeviceManager->getQueueFamilyIndices());
-	vertexBuffer = new VertexBuffer(logicalDeviceManager->getDevice(), physicalDeviceManager->getDevice(), vertices);
+	vertexBuffer = new VertexBuffer(logicalDeviceManager->getDevice(), physicalDeviceManager->getDevice(), modelLoader->vertices);
 	uniformBuffer = new UniformBuffer(logicalDeviceManager->getDevice(), physicalDeviceManager->getDevice());
 	textureImage = new TextureImage(logicalDeviceManager->getDevice(), physicalDeviceManager->getDevice(), logicalDeviceManager->getGraphicsQueue(), commandManager->commandPool);
 	descriptorsManager = new DescriptorsManager(logicalDeviceManager->getDevice(), uniformBuffer, textureImage);
@@ -84,6 +68,8 @@ Render::Render()
 	delete surfaceManager;
 	delete instanceManager;
 	delete windowManager;
+
+	delete modelLoader;
 }
 
 void Render::drawFrame()

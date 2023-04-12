@@ -18,7 +18,7 @@ TextureImage::TextureImage(VkDevice logicalDevice, VkPhysicalDevice physicalDevi
 	int textureHeight;
 	int textureChannels;
 
-	stbi_uc* pixels = stbi_load("textures/capybara.jpg", &textureWidth, &textureHeight, &textureChannels, STBI_rgb_alpha);
+	stbi_uc* pixels = stbi_load("textures/Polybios.png", &textureWidth, &textureHeight, &textureChannels, STBI_rgb_alpha);
 	VkDeviceSize imageSize = textureWidth * textureHeight * 4;
 
 	if (!pixels)

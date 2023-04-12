@@ -13,6 +13,8 @@
  * TODO: Frames in flight
  * TODO: Swap chain recreation
  * TODO: Swap chain recreation of depth buffer
+ * TODO: Vertex deduplication in loaded model
+ * TODO: Support of index buffer by a loaded model
  * 
  * TODO: Staging buffer
  * TODO: Index buffer

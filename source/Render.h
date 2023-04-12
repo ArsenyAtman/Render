@@ -4,7 +4,7 @@
 
 #include <vulkan/vulkan.h>
 
-const bool enableValidationLayers = true;
+const bool enableValidationLayers = false;
 
 const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
 const std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
@@ -22,6 +22,7 @@ class CommandManager;
 class SyncsManager;
 class TextureImage;
 class DescriptorsManager;
+class ModelLoader;
 
 class Render
 {
@@ -44,6 +45,7 @@ private:
 	GraphicsPipeline* graphicsPipeline = nullptr;
 	CommandManager* commandManager = nullptr;
 	SyncsManager* syncsManager = nullptr;
+	ModelLoader* modelLoader = nullptr;
 
 	void drawFrame();
 };

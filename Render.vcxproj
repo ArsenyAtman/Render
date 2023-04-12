@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\Arseny\Documents\Visual Studio 2022\Libraries\stb;C:\Users\Arseny\Documents\Visual Studio 2022\Libraries\glfw-3.3.8.bin.WIN64\include;C:\Users\Arseny\Documents\Visual Studio 2022\Libraries\glm;C:\VulkanSDK\1.3.239.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Arseny\Documents\Visual Studio 2022\Libraries\tinyobjloader;C:\Users\Arseny\Documents\Visual Studio 2022\Libraries\stb;C:\Users\Arseny\Documents\Visual Studio 2022\Libraries\glfw-3.3.8.bin.WIN64\include;C:\Users\Arseny\Documents\Visual Studio 2022\Libraries\glm;C:\VulkanSDK\1.3.239.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -122,7 +122,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\Arseny\Documents\Visual Studio 2022\Libraries\stb;C:\Users\Arseny\Documents\Visual Studio 2022\Libraries\glfw-3.3.8.bin.WIN64\include;C:\Users\Arseny\Documents\Visual Studio 2022\Libraries\glm;C:\VulkanSDK\1.3.239.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Arseny\Documents\Visual Studio 2022\Libraries\tinyobjloader;C:\Users\Arseny\Documents\Visual Studio 2022\Libraries\stb;C:\Users\Arseny\Documents\Visual Studio 2022\Libraries\glfw-3.3.8.bin.WIN64\include;C:\Users\Arseny\Documents\Visual Studio 2022\Libraries\glm;C:\VulkanSDK\1.3.239.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -151,6 +151,7 @@
     <ClCompile Include="source\InstanceManager.cpp" />
     <ClCompile Include="source\LogicalDeviceManager.cpp" />
     <ClCompile Include="source\main.cpp" />
+    <ClCompile Include="source\ModelLoader.cpp" />
     <ClCompile Include="source\PhysicalDeviceManager.cpp" />
     <ClCompile Include="source\Render.cpp" />
     <ClCompile Include="source\SurfaceManager.cpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="source\Helpers.h" />
     <ClInclude Include="source\InstanceManager.h" />
     <ClInclude Include="source\LogicalDeviceManager.h" />
+    <ClInclude Include="source\ModelLoader.h" />
     <ClInclude Include="source\PhysicalDeviceManager.h" />
     <ClInclude Include="source\Render.h" />
     <ClInclude Include="source\SurfaceManager.h" />

@@ -79,6 +79,9 @@
     <ClCompile Include="source\DepthBuffer.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\ModelLoader.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CommandManager.h">
@@ -130,6 +133,9 @@
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="source\DepthBuffer.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ModelLoader.h">
       <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>
