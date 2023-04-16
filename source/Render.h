@@ -32,13 +32,12 @@ class Render
 {
 public:
 
-	Render();
+	Render(Device* device, Window* window);
+	virtual ~Render();
+
+	void tick();
 
 private:
-
-	Settings* settings = nullptr;
-	Window* window = nullptr;
-	Device* device = nullptr;
 
 	VertexBuffer* vertexBuffer = nullptr;
 	UniformBuffer* uniformBuffer = nullptr;
@@ -49,6 +48,8 @@ private:
 	CommandManager* commandManager = nullptr;
 	SyncsManager* syncsManager = nullptr;
 	ModelLoader* modelLoader = nullptr;
+
+	Device* device;
 
 	void drawFrame();
 };

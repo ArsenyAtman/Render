@@ -20,15 +20,11 @@
 #include "Window.h"
 #include "Device.h"
 
-Render::Render()
+Render::Render(Device* device, Window* window)
 {
+	this->device = device;
+
 	modelLoader = new ModelLoader();
-
-	settings = new Settings("settings/settings.ini");
-	const ApplicationSettings* applicationSettings = settings->getApplicationSettings();
-
-	window = new Window(applicationSettings);
-	device = new Device(window, applicationSettings);
 
 	commandManager = new CommandManager(device->getLogicalDevice(), device->getQueueIndices());
 	vertexBuffer = new VertexBuffer(device->getLogicalDevice(), device->getPhysicalDevice(), modelLoader->vertices);
@@ -38,21 +34,10 @@ Render::Render()
 	swapChainManager = new SwapChainManager(device->getLogicalDevice(), device->getPhysicalDevice(), device->getGraphicsQueue(), commandManager->commandPool, device->getQueueIndices(), window->getSurface(), window);
 	graphicsPipeline = new GraphicsPipeline(device->getLogicalDevice(), swapChainManager->renderPass, descriptorsManager);
 	syncsManager = new SyncsManager(device->getLogicalDevice());
+}
 
-	while (!window->shouldExit())
-	{
-		static std::chrono::steady_clock::time_point startTime = std::chrono::high_resolution_clock::now();
-
-		window->tick();
-		drawFrame();
-
-		static std::chrono::steady_clock::time_point endTime = std::chrono::high_resolution_clock::now();
-
-		float frameTime = std::chrono::duration<float, std::chrono::milliseconds::period>(endTime - startTime).count();
-		//std::cout << "Frame time: " << frameTime << std::endl;
-		//std::cout << "FPS: " << 1000.0f / frameTime << std::endl;
-	}
-
+Render::~Render()
+{
 	vkDeviceWaitIdle(device->getLogicalDevice());
 
 	delete syncsManager;
@@ -64,10 +49,20 @@ Render::Render()
 	delete vertexBuffer;
 	delete commandManager;
 
-	delete device;
-	delete window;
-
 	delete modelLoader;
+}
+
+void Render::tick()
+{
+	static std::chrono::steady_clock::time_point startTime = std::chrono::high_resolution_clock::now();
+
+	drawFrame();
+
+	static std::chrono::steady_clock::time_point endTime = std::chrono::high_resolution_clock::now();
+
+	float frameTime = std::chrono::duration<float, std::chrono::milliseconds::period>(endTime - startTime).count();
+	std::cout << "Frame time: " << frameTime << std::endl;
+	std::cout << "FPS: " << 1000.0f / frameTime << std::endl;
 }
 
 void Render::drawFrame()

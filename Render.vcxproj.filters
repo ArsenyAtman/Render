@@ -9,6 +9,9 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;h</Extensions>
     </Filter>
+    <Filter Include="settings">
+      <UniqueIdentifier>{ccfd8d5d-676d-46e0-8923-36085fba8f23}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\shader.vert">
@@ -23,6 +26,9 @@
     <None Include=".gitattributes" />
     <None Include=".gitignore" />
     <None Include="README.md" />
+    <None Include="settings\settings.ini">
+      <Filter>settings</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\CommandManager.cpp">
@@ -88,6 +94,9 @@
     <ClCompile Include="source\Surface.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\Application.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CommandManager.h">
@@ -148,6 +157,9 @@
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="source\Surface.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Application.h">
       <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>

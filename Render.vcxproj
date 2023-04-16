@@ -138,11 +138,13 @@
     <None Include=".gitattributes" />
     <None Include=".gitignore" />
     <None Include="README.md" />
+    <None Include="settings\settings.ini" />
     <None Include="shaders\compile.bat" />
     <None Include="shaders\shader.frag" />
     <None Include="shaders\shader.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\Application.cpp" />
     <ClCompile Include="source\CommandManager.cpp" />
     <ClCompile Include="source\DepthBuffer.cpp" />
     <ClCompile Include="source\DescriptorsManager.cpp" />
@@ -166,6 +168,7 @@
     <ClCompile Include="source\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\Application.h" />
     <ClInclude Include="source\CommandManager.h" />
     <ClInclude Include="source\DepthBuffer.h" />
     <ClInclude Include="source\DescriptorsManager.h" />

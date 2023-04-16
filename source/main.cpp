@@ -2,7 +2,7 @@
 #include <stdexcept>
 #include <cstdlib>
 
-#include "Render.h"
+#include "Application.h"
 
 /**
  * TODO: Handle VK_ERROR_INCOMPATIBLE_DRIVER.
@@ -30,7 +30,7 @@ int main()
 {
 	try
 	{
-		Render render;
+		Application application;
 	}
 	catch (const std::exception& e)
 	{
