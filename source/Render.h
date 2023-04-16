@@ -24,6 +24,10 @@ class TextureImage;
 class DescriptorsManager;
 class ModelLoader;
 
+class Settings;
+class Window;
+class Device;
+
 class Render
 {
 public:
@@ -32,11 +36,10 @@ public:
 
 private:
 
-	WindowManager* windowManager = nullptr;
-	SurfaceManager* surfaceManager = nullptr;
-	InstanceManager* instanceManager = nullptr;
-	PhysicalDeviceManager* physicalDeviceManager = nullptr;
-	LogicalDeviceManager* logicalDeviceManager = nullptr;
+	Settings* settings = nullptr;
+	Window* window = nullptr;
+	Device* device = nullptr;
+
 	VertexBuffer* vertexBuffer = nullptr;
 	UniformBuffer* uniformBuffer = nullptr;
 	TextureImage* textureImage = nullptr;

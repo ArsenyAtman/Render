@@ -4,11 +4,6 @@
 #include <chrono>
 #include <iostream>
 
-#include "WindowManager.h"
-#include "SurfaceManager.h"
-#include "InstanceManager.h"
-#include "PhysicalDeviceManager.h"
-#include "LogicalDeviceManager.h"
 #include "SwapChainManager.h"
 #include "GraphicsPipeline.h"
 #include "VertexBuffer.h"
@@ -21,29 +16,34 @@
 
 #include "Vertex.h"
 
+#include "Settings.h"
+#include "Window.h"
+#include "Device.h"
+
 Render::Render()
 {
 	modelLoader = new ModelLoader();
 
-	windowManager = new WindowManager(1280, 720, "Vulkan Render");
-	instanceManager = new InstanceManager(windowManager, enableValidationLayers, validationLayers);
-	surfaceManager = new SurfaceManager(instanceManager->getInstance(), windowManager->getWindow());
-	physicalDeviceManager = new PhysicalDeviceManager(instanceManager->getInstance(), surfaceManager->getSurface(), deviceExtensions);
-	logicalDeviceManager = new LogicalDeviceManager(physicalDeviceManager->getDevice(), physicalDeviceManager->getQueueFamilyIndices(), enableValidationLayers, validationLayers, deviceExtensions);
-	commandManager = new CommandManager(logicalDeviceManager->getDevice(), physicalDeviceManager->getQueueFamilyIndices());
-	vertexBuffer = new VertexBuffer(logicalDeviceManager->getDevice(), physicalDeviceManager->getDevice(), modelLoader->vertices);
-	uniformBuffer = new UniformBuffer(logicalDeviceManager->getDevice(), physicalDeviceManager->getDevice());
-	textureImage = new TextureImage(logicalDeviceManager->getDevice(), physicalDeviceManager->getDevice(), logicalDeviceManager->getGraphicsQueue(), commandManager->commandPool);
-	descriptorsManager = new DescriptorsManager(logicalDeviceManager->getDevice(), uniformBuffer, textureImage);
-	swapChainManager = new SwapChainManager(logicalDeviceManager->getDevice(), physicalDeviceManager->getDevice(), logicalDeviceManager->getGraphicsQueue(), commandManager->commandPool, physicalDeviceManager->getQueueFamilyIndices(), surfaceManager->getSurface(), windowManager);
-	graphicsPipeline = new GraphicsPipeline(logicalDeviceManager->getDevice(), swapChainManager->renderPass, descriptorsManager);
-	syncsManager = new SyncsManager(logicalDeviceManager->getDevice());
+	settings = new Settings("settings/settings.ini");
+	const ApplicationSettings* applicationSettings = settings->getApplicationSettings();
 
-	while (!windowManager->isClosed())
+	window = new Window(applicationSettings);
+	device = new Device(window, applicationSettings);
+
+	commandManager = new CommandManager(device->getLogicalDevice(), device->getQueueIndices());
+	vertexBuffer = new VertexBuffer(device->getLogicalDevice(), device->getPhysicalDevice(), modelLoader->vertices);
+	uniformBuffer = new UniformBuffer(device->getLogicalDevice(), device->getPhysicalDevice());
+	textureImage = new TextureImage(device->getLogicalDevice(), device->getPhysicalDevice(), device->getGraphicsQueue(), commandManager->commandPool);
+	descriptorsManager = new DescriptorsManager(device->getLogicalDevice(), uniformBuffer, textureImage);
+	swapChainManager = new SwapChainManager(device->getLogicalDevice(), device->getPhysicalDevice(), device->getGraphicsQueue(), commandManager->commandPool, device->getQueueIndices(), window->getSurface(), window);
+	graphicsPipeline = new GraphicsPipeline(device->getLogicalDevice(), swapChainManager->renderPass, descriptorsManager);
+	syncsManager = new SyncsManager(device->getLogicalDevice());
+
+	while (!window->shouldExit())
 	{
 		static std::chrono::steady_clock::time_point startTime = std::chrono::high_resolution_clock::now();
 
-		windowManager->tick();
+		window->tick();
 		drawFrame();
 
 		static std::chrono::steady_clock::time_point endTime = std::chrono::high_resolution_clock::now();
@@ -53,7 +53,7 @@ Render::Render()
 		//std::cout << "FPS: " << 1000.0f / frameTime << std::endl;
 	}
 
-	vkDeviceWaitIdle(logicalDeviceManager->getDevice());
+	vkDeviceWaitIdle(device->getLogicalDevice());
 
 	delete syncsManager;
 	delete graphicsPipeline;
@@ -63,22 +63,20 @@ Render::Render()
 	delete uniformBuffer;
 	delete vertexBuffer;
 	delete commandManager;
-	delete logicalDeviceManager;
-	delete physicalDeviceManager;
-	delete surfaceManager;
-	delete instanceManager;
-	delete windowManager;
+
+	delete device;
+	delete window;
 
 	delete modelLoader;
 }
 
 void Render::drawFrame()
 {
-	vkWaitForFences(logicalDeviceManager->getDevice(), 1, &syncsManager->inFlightFence, VK_TRUE, UINT64_MAX);
-	vkResetFences(logicalDeviceManager->getDevice(), 1, &syncsManager->inFlightFence);
+	vkWaitForFences(device->getLogicalDevice(), 1, &syncsManager->inFlightFence, VK_TRUE, UINT64_MAX);
+	vkResetFences(device->getLogicalDevice(), 1, &syncsManager->inFlightFence);
 
 	uint32_t imageIndex;
-	vkAcquireNextImageKHR(logicalDeviceManager->getDevice(), swapChainManager->swapChain, UINT64_MAX, syncsManager->imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+	vkAcquireNextImageKHR(device->getLogicalDevice(), swapChainManager->swapChain, UINT64_MAX, syncsManager->imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
 
 	uniformBuffer->update(0, swapChainManager->swapChainExtent);
 
@@ -99,7 +97,7 @@ void Render::drawFrame()
 	submitInfo.signalSemaphoreCount = 1;
 	submitInfo.pSignalSemaphores = signalSemaphores;
 
-	VkResult result = vkQueueSubmit(logicalDeviceManager->getGraphicsQueue(), 1, &submitInfo, syncsManager->inFlightFence);
+	VkResult result = vkQueueSubmit(device->getGraphicsQueue(), 1, &submitInfo, syncsManager->inFlightFence);
 	if (result != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to submit draw command buffer!");
@@ -114,5 +112,5 @@ void Render::drawFrame()
 	presentInfo.pSwapchains = swapChains;
 	presentInfo.pImageIndices = &imageIndex;
 
-	vkQueuePresentKHR(logicalDeviceManager->getPresentQueue(), &presentInfo);
+	vkQueuePresentKHR(device->getPresentQueue(), &presentInfo);
 }

@@ -28,31 +28,16 @@
     <ClCompile Include="source\CommandManager.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="source\InstanceManager.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="source\LogicalDeviceManager.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
     <ClCompile Include="source\main.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="source\PhysicalDeviceManager.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
     <ClCompile Include="source\Render.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="source\SurfaceManager.cpp">
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\SwapChainManager.cpp">
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\SyncsManager.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="source\WindowManager.cpp">
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\GraphicsPipeline.cpp">
@@ -82,33 +67,39 @@
     <ClCompile Include="source\ModelLoader.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\RenderUnit.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Device.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Window.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\SystemWindow.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Settings.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Instance.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Surface.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CommandManager.h">
       <Filter>source</Filter>
     </ClInclude>
-    <ClInclude Include="source\InstanceManager.h">
-      <Filter>source</Filter>
-    </ClInclude>
-    <ClInclude Include="source\LogicalDeviceManager.h">
-      <Filter>source</Filter>
-    </ClInclude>
-    <ClInclude Include="source\PhysicalDeviceManager.h">
-      <Filter>source</Filter>
-    </ClInclude>
     <ClInclude Include="source\Render.h">
-      <Filter>source</Filter>
-    </ClInclude>
-    <ClInclude Include="source\SurfaceManager.h">
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="source\SwapChainManager.h">
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="source\SyncsManager.h">
-      <Filter>source</Filter>
-    </ClInclude>
-    <ClInclude Include="source\WindowManager.h">
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="source\GraphicsPipeline.h">
@@ -136,6 +127,27 @@
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="source\ModelLoader.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\RenderUnit.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Device.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Window.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\SystemWindow.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Settings.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Instance.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Surface.h">
       <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>

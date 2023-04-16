@@ -4,15 +4,16 @@
 #include <algorithm>
 #include <array>
 
-#include "WindowManager.h"
-#include "PhysicalDeviceManager.h"
 #include "Helpers.h"
 #include "DepthBuffer.h"
 
-SwapChainManager::SwapChainManager(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool, const QueueFamilyIndices& indices, VkSurfaceKHR surface, WindowManager* windowManager)
+#include "Window.h"
+#include "Device.h"
+
+SwapChainManager::SwapChainManager(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool, const QueueFamilyIndices& indices, VkSurfaceKHR surface, Window* window)
 {
 	this->logicalDevice = logicalDevice;
-	this->windowManager = windowManager;
+	this->window = window;
 
 	createSwapChain(logicalDevice, physicalDevice, graphicsQueue, commandPool, indices, surface);
 	createImageViews();
@@ -254,7 +255,7 @@ VkExtent2D SwapChainManager::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& ca
 	}
 	else
 	{
-		VkExtent2D actualExtent = windowManager->getExtent();
+		VkExtent2D actualExtent = window->getActualExtent();
 
 		actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
 		actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);

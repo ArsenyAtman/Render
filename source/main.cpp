@@ -11,6 +11,10 @@
  * TODO: Device suitable checks.
  * 
  * TODO: Frames in flight
+ * 
+ * TODO: Automatic shader compilation
+ * TODO: ini settings
+ * 
  * TODO: Swap chain recreation
  * TODO: Swap chain recreation of depth buffer
  * TODO: Vertex deduplication in loaded model
@@ -20,9 +24,6 @@
  * TODO: Index buffer
  * TODO: Mipmaps
  * TODO: Multisampling
- * 
- * TODO: Automatic shader compilation
- * TODO: ini settings
  */
 
 int main()

@@ -1,19 +1,28 @@
-#include "InstanceManager.h"
+#include "Instance.h"
 
-#include <stdexcept>
+#include "SystemWindow.h"
+#include "Settings.h"
 
-#include "WindowManager.h"
-
-InstanceManager::InstanceManager(WindowManager* windowManager, bool withValidationLayers, const std::vector<const char*>& validationLayers)
+Instance::Instance(SystemWindow* systemWindow, const ApplicationSettings* settings)
 {
-	if (withValidationLayers && !checkValidationLayersSupport(validationLayers))
+	instance = createInstance(systemWindow, settings);
+}
+
+Instance::~Instance()
+{
+	vkDestroyInstance(instance, nullptr);
+}
+
+VkInstance Instance::createInstance(SystemWindow* systemWindow, const ApplicationSettings* settings) const
+{
+	if (settings->withValidationLayers && !supportsValidationLayers(settings->validationLayers))
 	{
 		throw std::runtime_error("Validation layers are not available!");
 	}
 
 	VkApplicationInfo applicationInfo = VkApplicationInfo();
 	applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	applicationInfo.pApplicationName = "Vulkan Render";
+	applicationInfo.pApplicationName = settings->applicationName.data();
 	applicationInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
 	applicationInfo.pEngineName = "None";
 	applicationInfo.engineVersion = VK_MAKE_VERSION(0, 0, 0);
@@ -23,33 +32,31 @@ InstanceManager::InstanceManager(WindowManager* windowManager, bool withValidati
 	instanceCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	instanceCreateInfo.pApplicationInfo = &applicationInfo;
 	uint32_t countOfExtensions = 0;
-	const char** extensions;
-	extensions = windowManager->getRequiredExtensions(&countOfExtensions);
+	const char** requiredExtensions;
+	requiredExtensions = systemWindow->getRequiredExtensions(&countOfExtensions);
 	instanceCreateInfo.enabledExtensionCount = countOfExtensions;
-	instanceCreateInfo.ppEnabledExtensionNames = extensions;
-	if (withValidationLayers)
+	instanceCreateInfo.ppEnabledExtensionNames = requiredExtensions;
+	if (settings->withValidationLayers)
 	{
-		instanceCreateInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-		instanceCreateInfo.ppEnabledLayerNames = validationLayers.data();
+		instanceCreateInfo.enabledLayerCount = static_cast<uint32_t>(settings->validationLayers.size());
+		instanceCreateInfo.ppEnabledLayerNames = settings->validationLayers.data();
 	}
 	else
 	{
 		instanceCreateInfo.enabledLayerCount = 0;
 	}
 
+	VkInstance instance;
 	VkResult result = vkCreateInstance(&instanceCreateInfo, nullptr, &instance);
 	if (result != VK_SUCCESS)
 	{
-		throw std::runtime_error("Failed to create vulkan instance!");
+		throw std::runtime_error("Failed to create instance!");
 	}
+
+	return instance;
 }
 
-InstanceManager::~InstanceManager()
-{
-	vkDestroyInstance(instance, nullptr);
-}
-
-bool InstanceManager::checkValidationLayersSupport(const std::vector<const char*>& requestedValidationLayers)
+bool Instance::supportsValidationLayers(const std::vector<const char*>& requestedValidationLayers) const
 {
 	uint32_t countOfLayers;
 	vkEnumerateInstanceLayerProperties(&countOfLayers, nullptr);

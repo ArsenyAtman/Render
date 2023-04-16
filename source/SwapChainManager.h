@@ -11,7 +11,7 @@ struct SwapChainSupportDetails
 	std::vector<VkPresentModeKHR> presentModes;
 };
 
-class WindowManager;
+class Window;
 struct QueueFamilyIndices;
 class DepthBuffer;
 
@@ -20,7 +20,7 @@ class SwapChainManager
 
 public:
 
-	SwapChainManager(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool, const QueueFamilyIndices& indices, VkSurfaceKHR surface, WindowManager* windowManager);
+	SwapChainManager(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool, const QueueFamilyIndices& indices, VkSurfaceKHR surface, Window* window);
 	virtual ~SwapChainManager();
 
 	void recreateSwapChain();
@@ -44,7 +44,7 @@ private:
 	void createFramebuffer(VkImageView depthImageView);
 
 	VkDevice logicalDevice;
-	WindowManager* windowManager;
+	Window* window;
 
 	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
 

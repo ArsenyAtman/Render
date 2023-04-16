@@ -6,6 +6,8 @@
 #include "VertexBuffer.h"
 #include "DescriptorsManager.h"
 
+#include "Device.h"
+
 CommandManager::CommandManager(VkDevice logicalDevice, const QueueFamilyIndices& queueFamilyIndices)
 {
 	this->logicalDevice = logicalDevice;

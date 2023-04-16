@@ -2,7 +2,6 @@
 
 #include <vulkan/vulkan.h>
 
-#include "PhysicalDeviceManager.h"
 #include "SwapChainManager.h"
 
 class SwapChainManager;
