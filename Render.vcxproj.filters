@@ -97,6 +97,18 @@
     <ClCompile Include="source\Application.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\Model.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Mesh.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Texture.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Shader.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CommandManager.h">
@@ -160,6 +172,18 @@
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="source\Application.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Model.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Mesh.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Texture.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Shader.h">
       <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>

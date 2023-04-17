@@ -2,43 +2,27 @@
 
 #include <stdexcept>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
-
+#include "Texture.h"
 #include "Helpers.h"
 
-TextureImage::TextureImage(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool)
+TextureImage::TextureImage(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool, const Texture* texture)
 {
 	this->logicalDevice = logicalDevice;
 
 	VkBuffer stagingBuffer;
 	VkDeviceMemory stagingBufferMemory;
 
-	int textureWidth;
-	int textureHeight;
-	int textureChannels;
-
-	stbi_uc* pixels = stbi_load("textures/Polybios.png", &textureWidth, &textureHeight, &textureChannels, STBI_rgb_alpha);
-	VkDeviceSize imageSize = textureWidth * textureHeight * 4;
-
-	if (!pixels)
-	{
-		throw std::runtime_error("failed to load texture image!");
-	}
-
-	Helpers::createBuffer(logicalDevice, physicalDevice, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+	Helpers::createBuffer(logicalDevice, physicalDevice, texture->getSize(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
 	void* data;
-	vkMapMemory(logicalDevice, stagingBufferMemory, 0, imageSize, 0, &data);
-	memcpy(data, pixels, static_cast<size_t>(imageSize));
+	vkMapMemory(logicalDevice, stagingBufferMemory, 0, texture->getSize(), 0, &data);
+	memcpy(data, texture->getData(), texture->getSize());
 	vkUnmapMemory(logicalDevice, stagingBufferMemory);
 
-	stbi_image_free(pixels);
-
-	Helpers::createImage(logicalDevice, physicalDevice, textureWidth, textureHeight, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory);
+	Helpers::createImage(logicalDevice, physicalDevice, texture->getWidth(), texture->getHeight(), VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory);
 
 	Helpers::transitionImageLayout(logicalDevice, graphicsQueue, commandPool, textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-	copyBufferToImage(logicalDevice, graphicsQueue, commandPool, stagingBuffer, textureImage, static_cast<uint32_t>(textureWidth), static_cast<uint32_t>(textureHeight));
+	copyBufferToImage(logicalDevice, graphicsQueue, commandPool, stagingBuffer, textureImage, texture->getWidth(), texture->getHeight());
 
 	Helpers::transitionImageLayout(logicalDevice, graphicsQueue, commandPool, textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 

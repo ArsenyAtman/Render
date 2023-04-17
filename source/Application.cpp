@@ -3,6 +3,7 @@
 #include "Settings.h"
 #include "Window.h"
 #include "Device.h"
+#include "ModelLoader.h"
 #include "Render.h"
 
 Application::Application()
@@ -25,7 +26,12 @@ void Application::initSystems()
 	window = new Window(applicationSettings);
 	device = new Device(window, applicationSettings);
 
-	render = new Render(device, window);
+	modelLoader = new ModelLoader();
+	Model* model = modelLoader->loadModel(applicationSettings);
+
+	render = new Render(device, window, model);
+
+	delete model;
 }
 
 void Application::tick()

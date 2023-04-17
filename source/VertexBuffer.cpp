@@ -4,15 +4,16 @@
 #include <stdexcept>
 
 #include "Helpers.h"
+#include "Mesh.h"
 
-VertexBuffer::VertexBuffer(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, const std::vector<Vertex>& vertices)
+VertexBuffer::VertexBuffer(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, const Mesh* mesh)
 {
 	this->logicalDevice = logicalDevice;
-	this->vertexBufferSize = static_cast<uint32_t>(vertices.size());
+	this->vertexBufferSize = static_cast<uint32_t>(mesh->getVertices().size());
 
 	VkBufferCreateInfo bufferInfo{};
 	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-	bufferInfo.size = sizeof(vertices[0]) * vertices.size();
+	bufferInfo.size = sizeof(mesh->getVertices()[0]) * mesh->getVertices().size();
 	bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
@@ -40,7 +41,7 @@ VertexBuffer::VertexBuffer(VkDevice logicalDevice, VkPhysicalDevice physicalDevi
 
 	void* data;
 	vkMapMemory(logicalDevice, vertexBufferMemory, 0, bufferInfo.size, 0, &data);
-	memcpy(data, vertices.data(), static_cast<size_t>(bufferInfo.size));
+	memcpy(data, mesh->getVertices().data(), static_cast<size_t>(bufferInfo.size));
 	vkUnmapMemory(logicalDevice, vertexBufferMemory);
 }
 

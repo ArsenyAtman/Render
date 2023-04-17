@@ -3,6 +3,7 @@
 class Settings;
 class Window;
 class Device;
+class ModelLoader;
 class Render;
 
 class Application
@@ -20,6 +21,6 @@ private:
 	Settings* settings = nullptr;
 	Window* window = nullptr;
 	Device* device = nullptr;
+	ModelLoader* modelLoader = nullptr;
 	Render* render = nullptr;
-
 };

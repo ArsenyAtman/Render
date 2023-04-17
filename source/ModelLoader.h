@@ -1,9 +1,12 @@
 #pragma once
 
-#include <vector>
-#include <cstdint>
+#include <string>
 
-#include "Vertex.h"
+struct ApplicationSettings;
+class Model;
+class Mesh;
+class Texture;
+class Shader;
 
 class ModelLoader
 {
@@ -12,7 +15,10 @@ public:
 
 	ModelLoader();
 
-	std::vector<Vertex> vertices;
-	std::vector<uint32_t> indices;
+	Model* loadModel(const ApplicationSettings* settings);
+
+	Mesh* loadMesh(const std::string& meshPath);
+	Texture* loadTexture(const std::string& texturePath);
+	Shader* loadShader(const std::string& shaderPath);
 };
 

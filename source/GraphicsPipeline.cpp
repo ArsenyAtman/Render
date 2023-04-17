@@ -4,6 +4,7 @@
 #include <fstream>
 
 #include "Vertex.h"
+#include "Shader.h"
 #include "DescriptorsManager.h"
 
 namespace
@@ -11,11 +12,11 @@ namespace
 	const int MAX_FRAMES_IN_FLIGHT = 1;
 }
 
-GraphicsPipeline::GraphicsPipeline(VkDevice logicalDevice, VkRenderPass renderPass, DescriptorsManager* descriptorsManager)
+GraphicsPipeline::GraphicsPipeline(VkDevice logicalDevice, VkRenderPass renderPass, DescriptorsManager* descriptorsManager, const std::vector<Shader*>& shaders)
 {
 	this->logicalDevice = logicalDevice;
 
-	createGraphicsPipeline(renderPass, descriptorsManager);
+	createGraphicsPipeline(renderPass, descriptorsManager, shaders);
 }
 
 GraphicsPipeline::~GraphicsPipeline()
@@ -24,10 +25,10 @@ GraphicsPipeline::~GraphicsPipeline()
 	vkDestroyPipelineLayout(logicalDevice, pipelineLayout, nullptr);
 }
 
-void GraphicsPipeline::createGraphicsPipeline(VkRenderPass renderPass, DescriptorsManager* descriptorsManager)
+void GraphicsPipeline::createGraphicsPipeline(VkRenderPass renderPass, DescriptorsManager* descriptorsManager, const std::vector<Shader*>& shaders)
 {
-	std::vector<char> vertShaderCode = readFile("shaders/vert.spv");
-	std::vector<char> fragShaderCode = readFile("shaders/frag.spv");
+	std::vector<char> vertShaderCode = shaders[0]->getCode();
+	std::vector<char> fragShaderCode = shaders[1]->getCode();
 
 	VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
 	VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
@@ -152,32 +153,12 @@ void GraphicsPipeline::createGraphicsPipeline(VkRenderPass renderPass, Descripto
 	vkDestroyShaderModule(logicalDevice, vertShaderModule, nullptr);
 }
 
-std::vector<char> GraphicsPipeline::readFile(const std::string& filename)
-{
-	std::ifstream file(filename, std::ios::ate | std::ios::binary);
-
-	if (!file.is_open())
-	{
-		throw std::runtime_error("Failed to open a file!");
-	}
-
-	size_t fileSize = (size_t)file.tellg();
-	std::vector<char> buffer(fileSize);
-
-	file.seekg(0);
-	file.read(buffer.data(), fileSize);
-
-	file.close();
-
-	return buffer;
-}
-
-VkShaderModule GraphicsPipeline::createShaderModule(const std::vector<char>& code)
+VkShaderModule GraphicsPipeline::createShaderModule(const std::vector<char>& shaderCode)
 {
 	VkShaderModuleCreateInfo createInfo = VkShaderModuleCreateInfo();
 	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-	createInfo.codeSize = code.size();
-	createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+	createInfo.codeSize = shaderCode.size();
+	createInfo.pCode = reinterpret_cast<const uint32_t*>(shaderCode.data());
 
 	VkShaderModule shaderModule;
 	VkResult result = vkCreateShaderModule(logicalDevice, &createInfo, nullptr, &shaderModule);

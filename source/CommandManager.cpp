@@ -1,6 +1,7 @@
 #include "CommandManager.h"
 
 #include <stdexcept>
+#include <array>
 
 #include "GraphicsPipeline.h"
 #include "VertexBuffer.h"

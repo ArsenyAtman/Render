@@ -19,20 +19,19 @@
 #include "Settings.h"
 #include "Window.h"
 #include "Device.h"
+#include "Model.h"
 
-Render::Render(Device* device, Window* window)
+Render::Render(Device* device, Window* window, Model* model)
 {
 	this->device = device;
 
-	modelLoader = new ModelLoader();
-
 	commandManager = new CommandManager(device->getLogicalDevice(), device->getQueueIndices());
-	vertexBuffer = new VertexBuffer(device->getLogicalDevice(), device->getPhysicalDevice(), modelLoader->vertices);
+	vertexBuffer = new VertexBuffer(device->getLogicalDevice(), device->getPhysicalDevice(), model->getMesh());
 	uniformBuffer = new UniformBuffer(device->getLogicalDevice(), device->getPhysicalDevice());
-	textureImage = new TextureImage(device->getLogicalDevice(), device->getPhysicalDevice(), device->getGraphicsQueue(), commandManager->commandPool);
+	textureImage = new TextureImage(device->getLogicalDevice(), device->getPhysicalDevice(), device->getGraphicsQueue(), commandManager->commandPool, model->getTexture());
 	descriptorsManager = new DescriptorsManager(device->getLogicalDevice(), uniformBuffer, textureImage);
 	swapChainManager = new SwapChainManager(device->getLogicalDevice(), device->getPhysicalDevice(), device->getGraphicsQueue(), commandManager->commandPool, device->getQueueIndices(), window->getSurface(), window);
-	graphicsPipeline = new GraphicsPipeline(device->getLogicalDevice(), swapChainManager->renderPass, descriptorsManager);
+	graphicsPipeline = new GraphicsPipeline(device->getLogicalDevice(), swapChainManager->renderPass, descriptorsManager, model->getShaders());
 	syncsManager = new SyncsManager(device->getLogicalDevice());
 }
 
@@ -48,8 +47,6 @@ Render::~Render()
 	delete uniformBuffer;
 	delete vertexBuffer;
 	delete commandManager;
-
-	delete modelLoader;
 }
 
 void Render::tick()
@@ -61,8 +58,8 @@ void Render::tick()
 	static std::chrono::steady_clock::time_point endTime = std::chrono::high_resolution_clock::now();
 
 	float frameTime = std::chrono::duration<float, std::chrono::milliseconds::period>(endTime - startTime).count();
-	std::cout << "Frame time: " << frameTime << std::endl;
-	std::cout << "FPS: " << 1000.0f / frameTime << std::endl;
+	//std::cout << "Frame time: " << frameTime << std::endl;
+	//std::cout << "FPS: " << 1000.0f / frameTime << std::endl;
 }
 
 void Render::drawFrame()

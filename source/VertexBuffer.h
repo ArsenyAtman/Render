@@ -4,14 +4,14 @@
 
 #include <vulkan/vulkan.h>
 
-#include "Vertex.h"
+class Mesh;
 
 class VertexBuffer
 {
 
 public:
 
-	VertexBuffer(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, const std::vector<Vertex>& vertices);
+	VertexBuffer(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, const Mesh* mesh);
 	virtual ~VertexBuffer();
 
 	VkDevice logicalDevice;
