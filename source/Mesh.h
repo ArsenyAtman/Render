@@ -8,7 +8,7 @@ class Mesh
 {
 public:
 
-	Mesh(std::vector<Vertex>& vertices);
+	Mesh(std::vector<Vertex>& meshVertices);
 
 	const std::vector<Vertex>& getVertices() const { return vertices; }
 	const std::vector<uint32_t>& getIndices() const { return indices; }

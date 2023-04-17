@@ -1,11 +1,20 @@
 #include "Mesh.h"
 
-Mesh::Mesh(std::vector<Vertex>& vertices)
+#include <unordered_map>
+#include <cstdint>
+
+Mesh::Mesh(std::vector<Vertex>& meshVertices)
 {
-	this->vertices = vertices;
-	
-	for (size_t i = 0; i < vertices.size(); ++i)
+	std::unordered_map<Vertex, uint32_t> uniqueVertices{};
+
+	for (const Vertex& vertex : meshVertices)
 	{
-		indices.push_back(i);
+		if (uniqueVertices.count(vertex) == 0)
+		{
+			uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
+			vertices.push_back(vertex);
+		}
+
+		indices.push_back(uniqueVertices[vertex]);
 	}
 }

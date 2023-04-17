@@ -1,5 +1,10 @@
 #include "Vertex.h"
 
+bool Vertex::operator==(const Vertex& other) const
+{
+	return position == other.position && color == other.color && textureCoordinate == other.textureCoordinate;
+}
+
 VkVertexInputBindingDescription Vertex::getBindingDescription()
 {
 	VkVertexInputBindingDescription bindingDescription = VkVertexInputBindingDescription();
@@ -16,7 +21,7 @@ std::array<VkVertexInputAttributeDescription, 3> Vertex::getAttributeDescription
 	attributeDescriptions[0].binding = 0;
 	attributeDescriptions[0].location = 0;
 	attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-	attributeDescriptions[0].offset = offsetof(Vertex, pos);
+	attributeDescriptions[0].offset = offsetof(Vertex, position);
 
 	attributeDescriptions[1].binding = 0;
 	attributeDescriptions[1].location = 1;

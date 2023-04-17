@@ -54,7 +54,7 @@ Mesh* ModelLoader::loadMesh(const std::string& meshPath)
         {
             Vertex vertex{};
 
-            vertex.pos = {
+            vertex.position = {
                 attributes.vertices[3 * index.vertex_index + 0],
                 attributes.vertices[3 * index.vertex_index + 1],
                 attributes.vertices[3 * index.vertex_index + 2]

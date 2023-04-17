@@ -4,6 +4,7 @@
 #include "Window.h"
 #include "Device.h"
 #include "ModelLoader.h"
+#include "Model.h"
 #include "Render.h"
 
 Application::Application()
