@@ -6,7 +6,7 @@
 Mesh::Mesh(std::vector<Vertex>& meshVertices)
 {
 	std::unordered_map<Vertex, uint32_t> uniqueVertices{};
-
+	
 	for (const Vertex& vertex : meshVertices)
 	{
 		if (uniqueVertices.count(vertex) == 0)

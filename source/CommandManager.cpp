@@ -5,6 +5,7 @@
 
 #include "GraphicsPipeline.h"
 #include "VertexBuffer.h"
+#include "IndexBuffer.h"
 #include "DescriptorsManager.h"
 
 #include "Device.h"
@@ -51,7 +52,7 @@ void CommandManager::createCommandBuffer()
 	}
 }
 
-void CommandManager::recordCommandBuffer(uint32_t imageIndex, SwapChainManager* swapChainManager, GraphicsPipeline* graphicsPipeline, VertexBuffer* vertexBuffer, DescriptorsManager* descriptorsManager)
+void CommandManager::recordCommandBuffer(uint32_t imageIndex, SwapChainManager* swapChainManager, GraphicsPipeline* graphicsPipeline, VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, DescriptorsManager* descriptorsManager)
 {
 	vkResetCommandBuffer(commandBuffer, 0);
 
@@ -101,9 +102,11 @@ void CommandManager::recordCommandBuffer(uint32_t imageIndex, SwapChainManager* 
 	VkDeviceSize offsets[] = { 0 };
 	vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
+	vkCmdBindIndexBuffer(commandBuffer, indexBuffer->indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->pipelineLayout, 0, 1, &descriptorsManager->descriptorSets[0], 0, nullptr);
 
-	vkCmdDraw(commandBuffer, vertexBuffer->vertexBufferSize, 1, 0, 0);
+	vkCmdDrawIndexed(commandBuffer, indexBuffer->indexBufferSize, 1, 0, 0, 0);
 
 	vkCmdEndRenderPass(commandBuffer);
 

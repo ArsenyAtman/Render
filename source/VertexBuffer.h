@@ -11,7 +11,7 @@ class VertexBuffer
 
 public:
 
-	VertexBuffer(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, const Mesh* mesh);
+	VertexBuffer(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool, const Mesh* mesh);
 	virtual ~VertexBuffer();
 
 	VkDevice logicalDevice;

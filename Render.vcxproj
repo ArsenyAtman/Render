@@ -151,6 +151,7 @@
     <ClCompile Include="source\Device.cpp" />
     <ClCompile Include="source\GraphicsPipeline.cpp" />
     <ClCompile Include="source\Helpers.cpp" />
+    <ClCompile Include="source\IndexBuffer.cpp" />
     <ClCompile Include="source\Instance.cpp" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\Mesh.cpp" />
@@ -179,6 +180,7 @@
     <ClInclude Include="source\Device.h" />
     <ClInclude Include="source\GraphicsPipeline.h" />
     <ClInclude Include="source\Helpers.h" />
+    <ClInclude Include="source\IndexBuffer.h" />
     <ClInclude Include="source\Instance.h" />
     <ClInclude Include="source\Mesh.h" />
     <ClInclude Include="source\Model.h" />

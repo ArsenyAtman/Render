@@ -109,6 +109,9 @@
     <ClCompile Include="source\Shader.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\IndexBuffer.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CommandManager.h">
@@ -184,6 +187,9 @@
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="source\Shader.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\IndexBuffer.h">
       <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>

@@ -7,6 +7,7 @@
 #include "SwapChainManager.h"
 #include "GraphicsPipeline.h"
 #include "VertexBuffer.h"
+#include "IndexBuffer.h"
 #include "UniformBuffer.h"
 #include "CommandManager.h"
 #include "SyncsManager.h"
@@ -26,7 +27,8 @@ Render::Render(Device* device, Window* window, Model* model)
 	this->device = device;
 
 	commandManager = new CommandManager(device->getLogicalDevice(), device->getQueueIndices());
-	vertexBuffer = new VertexBuffer(device->getLogicalDevice(), device->getPhysicalDevice(), model->getMesh());
+	vertexBuffer = new VertexBuffer(device->getLogicalDevice(), device->getPhysicalDevice(), device->getGraphicsQueue(), commandManager->commandPool, model->getMesh());
+	indexBuffer = new IndexBuffer(device->getLogicalDevice(), device->getPhysicalDevice(), device->getGraphicsQueue(), commandManager->commandPool, model->getMesh());
 	uniformBuffer = new UniformBuffer(device->getLogicalDevice(), device->getPhysicalDevice());
 	textureImage = new TextureImage(device->getLogicalDevice(), device->getPhysicalDevice(), device->getGraphicsQueue(), commandManager->commandPool, model->getTexture());
 	descriptorsManager = new DescriptorsManager(device->getLogicalDevice(), uniformBuffer, textureImage);
@@ -45,6 +47,7 @@ Render::~Render()
 	delete descriptorsManager;
 	delete textureImage;
 	delete uniformBuffer;
+	delete indexBuffer;
 	delete vertexBuffer;
 	delete commandManager;
 }
@@ -58,8 +61,8 @@ void Render::tick()
 	static std::chrono::steady_clock::time_point endTime = std::chrono::high_resolution_clock::now();
 
 	float frameTime = std::chrono::duration<float, std::chrono::milliseconds::period>(endTime - startTime).count();
-	//std::cout << "Frame time: " << frameTime << std::endl;
-	//std::cout << "FPS: " << 1000.0f / frameTime << std::endl;
+	std::cout << "Frame time: " << frameTime << std::endl;
+	std::cout << "FPS: " << 1000.0f / frameTime << std::endl;
 }
 
 void Render::drawFrame()
@@ -72,7 +75,7 @@ void Render::drawFrame()
 
 	uniformBuffer->update(0, swapChainManager->swapChainExtent);
 
-	commandManager->recordCommandBuffer(imageIndex, swapChainManager, graphicsPipeline, vertexBuffer, descriptorsManager);
+	commandManager->recordCommandBuffer(imageIndex, swapChainManager, graphicsPipeline, vertexBuffer, indexBuffer, descriptorsManager);
 
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;

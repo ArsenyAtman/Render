@@ -4,6 +4,7 @@
 
 #include <vulkan/vulkan.h>
 
+class IndexBuffer;
 class VertexBuffer;
 class UniformBuffer;
 class SwapChainManager;
@@ -30,6 +31,7 @@ public:
 private:
 
 	VertexBuffer* vertexBuffer = nullptr;
+	IndexBuffer* indexBuffer = nullptr;
 	UniformBuffer* uniformBuffer = nullptr;
 	TextureImage* textureImage = nullptr;
 	DescriptorsManager* descriptorsManager = nullptr;

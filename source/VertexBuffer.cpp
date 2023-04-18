@@ -6,43 +6,28 @@
 #include "Helpers.h"
 #include "Mesh.h"
 
-VertexBuffer::VertexBuffer(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, const Mesh* mesh)
+VertexBuffer::VertexBuffer(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool, const Mesh* mesh)
 {
 	this->logicalDevice = logicalDevice;
 	this->vertexBufferSize = static_cast<uint32_t>(mesh->getVertices().size());
 
-	VkBufferCreateInfo bufferInfo{};
-	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-	bufferInfo.size = sizeof(mesh->getVertices()[0]) * mesh->getVertices().size();
-	bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    VkDeviceSize bufferSize = sizeof(mesh->getVertices()[0]) * mesh->getVertices().size();
 
-	VkResult result = vkCreateBuffer(logicalDevice, &bufferInfo, nullptr, &vertexBuffer);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create vertex buffer!");
-	}
+    VkBuffer stagingBuffer;
+    VkDeviceMemory stagingBufferMemory;
+    Helpers::createBuffer(logicalDevice, physicalDevice, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
-	VkMemoryRequirements memRequirements;
-	vkGetBufferMemoryRequirements(logicalDevice, vertexBuffer, &memRequirements);
+    void* data;
+    vkMapMemory(logicalDevice, stagingBufferMemory, 0, bufferSize, 0, &data);
+    memcpy(data, mesh->getVertices().data(), (size_t)bufferSize);
+    vkUnmapMemory(logicalDevice, stagingBufferMemory);
 
-	VkMemoryAllocateInfo allocInfo{};
-	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-	allocInfo.allocationSize = memRequirements.size;
-	allocInfo.memoryTypeIndex = Helpers::findMemoryType(physicalDevice, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    Helpers::createBuffer(logicalDevice, physicalDevice, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
 
-	VkResult result2 = vkAllocateMemory(logicalDevice, &allocInfo, nullptr, &vertexBufferMemory);
-	if (result2 != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to allocate vertex buffer memory!");
-	}
+	Helpers::copyBuffer(logicalDevice, bufferSize, graphicsQueue, commandPool, stagingBuffer, vertexBuffer);
 
-	vkBindBufferMemory(logicalDevice, vertexBuffer, vertexBufferMemory, 0);
-
-	void* data;
-	vkMapMemory(logicalDevice, vertexBufferMemory, 0, bufferInfo.size, 0, &data);
-	memcpy(data, mesh->getVertices().data(), static_cast<size_t>(bufferInfo.size));
-	vkUnmapMemory(logicalDevice, vertexBufferMemory);
+    vkDestroyBuffer(logicalDevice, stagingBuffer, nullptr);
+    vkFreeMemory(logicalDevice, stagingBufferMemory, nullptr);
 }
 
 VertexBuffer::~VertexBuffer()
