@@ -55,15 +55,7 @@ Render::~Render()
 
 void Render::tick()
 {
-	static std::chrono::steady_clock::time_point startTime = std::chrono::high_resolution_clock::now();
-
 	drawFrame();
-
-	static std::chrono::steady_clock::time_point endTime = std::chrono::high_resolution_clock::now();
-
-	float frameTime = std::chrono::duration<float, std::chrono::milliseconds::period>(endTime - startTime).count();
-	//std::cout << "Frame time: " << frameTime << std::endl;
-	//std::cout << "FPS: " << 1000.0f / frameTime << std::endl;
 }
 
 void Render::drawFrame()
