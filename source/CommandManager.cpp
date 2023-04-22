@@ -100,7 +100,7 @@ void CommandManager::recordCommandBuffer(uint32_t currentFrame, uint32_t imageIn
 
 	for (const Buffer* buffer : getRender()->getBuffers())
 	{
-		buffer->bindBuffer(commandBuffers[currentFrame]);
+		buffer->bindToCommandBuffer(commandBuffers[currentFrame]);
 	}
 	
 	vkCmdBindDescriptorSets(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, getRender()->getGraphicsPipeline()->pipelineLayout, 0, 1, &getRender()->getDescriptorsManager()->descriptorSets[0], 0, nullptr);

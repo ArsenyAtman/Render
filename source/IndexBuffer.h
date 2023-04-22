@@ -12,5 +12,5 @@ public:
 
 	IndexBuffer(Render* render, Device* device, const ApplicationSettings* settings, const Mesh* mesh);
 
-	virtual void bindBuffer(VkCommandBuffer commandBuffer) const override;
+	virtual void bindToCommandBuffer(VkCommandBuffer commandBuffer) const override;
 };

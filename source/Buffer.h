@@ -1,17 +1,16 @@
 #pragma once
 
 #include "RenderModule.h"
+#include "CommandBufferBindable.h"
 
 #include <vulkan/vulkan.h>
 
-class Buffer : public RenderModule
+class Buffer : public RenderModule, public CommandBufferBindable
 {
 public:
 
 	Buffer(Render* render, Device* device, const ApplicationSettings* settings);
 	virtual ~Buffer();
-
-	virtual void bindBuffer(VkCommandBuffer commandBuffer) const { return; }
 
 	uint32_t getBufferSize() const { return bufferSize; }
 

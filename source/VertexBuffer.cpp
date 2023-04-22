@@ -10,7 +10,7 @@ VertexBuffer::VertexBuffer(Render* render, Device* device, const ApplicationSett
 	constructBuffer(mesh->getVertices().data(), sizeof(mesh->getVertices()[0]), mesh->getVertices().size(), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
 }
 
-void VertexBuffer::bindBuffer(VkCommandBuffer commandBuffer) const
+void VertexBuffer::bindToCommandBuffer(VkCommandBuffer commandBuffer) const
 {
 	VkBuffer vertexBuffers[] = { getBuffer() };
 	VkDeviceSize offsets[] = { 0 };
