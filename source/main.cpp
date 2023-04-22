@@ -5,8 +5,6 @@
 #include "Application.h"
 
 /**
- * TODO: Automatic shader compilation
- * 
  * TODO: Handle VK_ERROR_INCOMPATIBLE_DRIVER.
  * TODO: Check extension support.
  * TODO: Message callback in validation layers.
