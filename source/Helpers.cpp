@@ -2,6 +2,8 @@
 
 #include <stdexcept>
 
+#include "Device.h"
+
 void Helpers::createBuffer(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
 {
     VkBufferCreateInfo bufferInfo{};
@@ -29,15 +31,30 @@ void Helpers::createBuffer(VkDevice logicalDevice, VkPhysicalDevice physicalDevi
     vkBindBufferMemory(logicalDevice, buffer, bufferMemory, 0);
 }
 
-void Helpers::copyBuffer(VkDevice logicalDevice, VkDeviceSize size, VkQueue graphicsQueue, VkCommandPool commandPool, VkBuffer sourceBuffer, VkBuffer destinationBuffer)
+void Helpers::copyBuffer(Device* device, VkDeviceSize size, VkBuffer sourceBuffer, VkBuffer destinationBuffer)
 {
-    VkCommandBuffer commandBuffer = beginSingleTimeCommands(logicalDevice, commandPool);
+    VkCommandPool commandPool;
+
+    VkCommandPoolCreateInfo poolInfo{};
+    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    poolInfo.queueFamilyIndex = device->getQueueIndices().graphicsFamily.value();
+
+    VkResult result = vkCreateCommandPool(device->getLogicalDevice(), &poolInfo, nullptr, &commandPool);
+    if (result != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create command pool!");
+    }
+
+    VkCommandBuffer commandBuffer = beginSingleTimeCommands(device->getLogicalDevice(), commandPool);
 
     VkBufferCopy copyRegion{};
     copyRegion.size = size;
     vkCmdCopyBuffer(commandBuffer, sourceBuffer, destinationBuffer, 1, &copyRegion);
 
-    endSingleTimeCommands(logicalDevice, commandBuffer, graphicsQueue, commandPool);
+    endSingleTimeCommands(device->getLogicalDevice(), commandBuffer, device->getGraphicsQueue(), commandPool);
+
+    vkDestroyCommandPool(device->getLogicalDevice(), commandPool, nullptr);
 }
 
 uint32_t Helpers::findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties)

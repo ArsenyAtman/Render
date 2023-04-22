@@ -27,9 +27,9 @@ Render::Render(Device* device, Window* window, Model* model, const ApplicationSe
 	this->device = device;
 	this->settings = settings;
 
-	commandManager = new CommandManager(device->getLogicalDevice(), device->getQueueIndices(), settings);
-	vertexBuffer = new VertexBuffer(device->getLogicalDevice(), device->getPhysicalDevice(), device->getGraphicsQueue(), commandManager->commandPool, model->getMesh());
-	indexBuffer = new IndexBuffer(device->getLogicalDevice(), device->getPhysicalDevice(), device->getGraphicsQueue(), commandManager->commandPool, model->getMesh());
+	commandManager = new CommandManager(this, device, settings);
+	vertexBuffer = new VertexBuffer(this, device, settings, model->getMesh());
+	indexBuffer = new IndexBuffer(this, device, settings, model->getMesh());
 	uniformBuffer = new UniformBuffer(device->getLogicalDevice(), device->getPhysicalDevice(), settings);
 	textureImage = new TextureImage(device->getLogicalDevice(), device->getPhysicalDevice(), device->getGraphicsQueue(), commandManager->commandPool, model->getTexture());
 	descriptorsManager = new DescriptorsManager(device->getLogicalDevice(), uniformBuffer, textureImage, settings);
@@ -68,7 +68,7 @@ void Render::drawFrame()
 
 	uniformBuffer->update(currentFrame, swapChainManager->swapChainExtent);
 
-	commandManager->recordCommandBuffer(currentFrame, imageIndex, swapChainManager, graphicsPipeline, vertexBuffer, indexBuffer, descriptorsManager);
+	commandManager->recordCommandBuffer(currentFrame, imageIndex);
 
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;

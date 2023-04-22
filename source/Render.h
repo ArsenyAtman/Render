@@ -30,6 +30,15 @@ public:
 
 	void tick();
 
+	VertexBuffer* getVertexBuffer() const { return vertexBuffer; }
+	IndexBuffer* getIndexBuffer() const { return indexBuffer; }
+	//UniformBuffer* getUniformBuffer() const { return uniformBuffer; }
+	//TextureImage* getTextureImage() const { return textureImage; }
+	DescriptorsManager* getDescriptorsManager() const { return descriptorsManager; }
+	SwapChainManager* getSwapChain() const { return swapChainManager; }
+	GraphicsPipeline* getGraphicsPipeline() const { return graphicsPipeline; }
+	CommandManager* getCommandBuffer() const { return commandManager; }
+
 private:
 
 	VertexBuffer* vertexBuffer = nullptr;

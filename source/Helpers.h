@@ -4,13 +4,15 @@
 
 #include <vulkan/vulkan.h>
 
+class Device;
+
 class Helpers
 {
 
 public:
 
     static void createBuffer(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
-    static void copyBuffer(VkDevice logicalDevice, VkDeviceSize size, VkQueue graphicsQueue, VkCommandPool commandPool, VkBuffer sourceBuffer, VkBuffer destinationBuffer);
+    static void copyBuffer(Device* device, VkDeviceSize size, VkBuffer sourceBuffer, VkBuffer destinationBuffer);
     
     static uint32_t findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
 

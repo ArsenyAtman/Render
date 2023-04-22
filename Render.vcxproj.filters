@@ -112,6 +112,12 @@
     <ClCompile Include="source\ShaderCompiler.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\RenderModule.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\MeshBuffer.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CommandManager.h">
@@ -193,6 +199,12 @@
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="source\ShaderCompiler.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\RenderModule.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\MeshBuffer.h">
       <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>

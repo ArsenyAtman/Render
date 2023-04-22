@@ -1,24 +1,20 @@
 #pragma once
 
+#include "MeshBuffer.h"
+
 #include <vector>
 
 #include <vulkan/vulkan.h>
 
 class Mesh;
 
-class VertexBuffer
+class VertexBuffer : public MeshBuffer
 {
 
 public:
 
-	VertexBuffer(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool, const Mesh* mesh);
-	virtual ~VertexBuffer();
+	VertexBuffer(Render* render, Device* device, const ApplicationSettings* settings, const Mesh* mesh);
 
-	VkDevice logicalDevice;
-
-	VkBuffer vertexBuffer;
-	VkDeviceMemory vertexBufferMemory;
-
-	uint32_t vertexBufferSize;
+	virtual void bindBuffer(VkCommandBuffer commandBuffer) override;
 };
 
