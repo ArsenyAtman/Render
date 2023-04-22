@@ -19,11 +19,13 @@ class Window;
 class Device;
 class Model;
 
+struct ApplicationSettings;
+
 class Render
 {
 public:
 
-	Render(Device* device, Window* window, Model* model);
+	Render(Device* device, Window* window, Model* model, const ApplicationSettings* settings);
 	virtual ~Render();
 
 	void tick();
@@ -41,6 +43,9 @@ private:
 	SyncsManager* syncsManager = nullptr;
 
 	Device* device;
+	const ApplicationSettings* settings = nullptr;
+
+	uint32_t currentFrame = 0;
 
 	void drawFrame();
 };

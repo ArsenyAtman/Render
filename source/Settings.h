@@ -23,6 +23,8 @@ struct ApplicationSettings
 	std::string meshPath;
 	std::string texturePath;
 	std::vector<std::string> shaderPaths;
+
+	uint32_t maxFramesInFlight;
 };
 
 class Settings

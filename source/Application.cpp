@@ -30,7 +30,7 @@ void Application::initSystems()
 	modelLoader = new ModelLoader();
 	Model* model = modelLoader->loadModel(applicationSettings);
 
-	render = new Render(device, window, model);
+	render = new Render(device, window, model, applicationSettings);
 
 	delete model;
 }

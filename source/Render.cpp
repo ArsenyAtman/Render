@@ -22,19 +22,20 @@
 #include "Device.h"
 #include "Model.h"
 
-Render::Render(Device* device, Window* window, Model* model)
+Render::Render(Device* device, Window* window, Model* model, const ApplicationSettings* settings)
 {
 	this->device = device;
+	this->settings = settings;
 
-	commandManager = new CommandManager(device->getLogicalDevice(), device->getQueueIndices());
+	commandManager = new CommandManager(device->getLogicalDevice(), device->getQueueIndices(), settings);
 	vertexBuffer = new VertexBuffer(device->getLogicalDevice(), device->getPhysicalDevice(), device->getGraphicsQueue(), commandManager->commandPool, model->getMesh());
 	indexBuffer = new IndexBuffer(device->getLogicalDevice(), device->getPhysicalDevice(), device->getGraphicsQueue(), commandManager->commandPool, model->getMesh());
-	uniformBuffer = new UniformBuffer(device->getLogicalDevice(), device->getPhysicalDevice());
+	uniformBuffer = new UniformBuffer(device->getLogicalDevice(), device->getPhysicalDevice(), settings);
 	textureImage = new TextureImage(device->getLogicalDevice(), device->getPhysicalDevice(), device->getGraphicsQueue(), commandManager->commandPool, model->getTexture());
-	descriptorsManager = new DescriptorsManager(device->getLogicalDevice(), uniformBuffer, textureImage);
+	descriptorsManager = new DescriptorsManager(device->getLogicalDevice(), uniformBuffer, textureImage, settings);
 	swapChainManager = new SwapChainManager(device->getLogicalDevice(), device->getPhysicalDevice(), device->getGraphicsQueue(), commandManager->commandPool, device->getQueueIndices(), window->getSurface(), window);
 	graphicsPipeline = new GraphicsPipeline(device->getLogicalDevice(), swapChainManager->renderPass, descriptorsManager, model->getShaders());
-	syncsManager = new SyncsManager(device->getLogicalDevice());
+	syncsManager = new SyncsManager(device->getLogicalDevice(), settings);
 }
 
 Render::~Render()
@@ -61,38 +62,38 @@ void Render::tick()
 	static std::chrono::steady_clock::time_point endTime = std::chrono::high_resolution_clock::now();
 
 	float frameTime = std::chrono::duration<float, std::chrono::milliseconds::period>(endTime - startTime).count();
-	std::cout << "Frame time: " << frameTime << std::endl;
-	std::cout << "FPS: " << 1000.0f / frameTime << std::endl;
+	//std::cout << "Frame time: " << frameTime << std::endl;
+	//std::cout << "FPS: " << 1000.0f / frameTime << std::endl;
 }
 
 void Render::drawFrame()
 {
-	vkWaitForFences(device->getLogicalDevice(), 1, &syncsManager->inFlightFence, VK_TRUE, UINT64_MAX);
-	vkResetFences(device->getLogicalDevice(), 1, &syncsManager->inFlightFence);
+	vkWaitForFences(device->getLogicalDevice(), 1, &syncsManager->inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+	vkResetFences(device->getLogicalDevice(), 1, &syncsManager->inFlightFences[currentFrame]);
 
 	uint32_t imageIndex;
-	vkAcquireNextImageKHR(device->getLogicalDevice(), swapChainManager->swapChain, UINT64_MAX, syncsManager->imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+	vkAcquireNextImageKHR(device->getLogicalDevice(), swapChainManager->swapChain, UINT64_MAX, syncsManager->imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
 
 	uniformBuffer->update(0, swapChainManager->swapChainExtent);
 
-	commandManager->recordCommandBuffer(imageIndex, swapChainManager, graphicsPipeline, vertexBuffer, indexBuffer, descriptorsManager);
+	commandManager->recordCommandBuffer(currentFrame, imageIndex, swapChainManager, graphicsPipeline, vertexBuffer, indexBuffer, descriptorsManager);
 
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-	VkSemaphore waitSemaphores[] = { syncsManager->imageAvailableSemaphore };
+	VkSemaphore waitSemaphores[] = { syncsManager->imageAvailableSemaphores[currentFrame]};
 	VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 	submitInfo.waitSemaphoreCount = 1;
 	submitInfo.pWaitSemaphores = waitSemaphores;
 	submitInfo.pWaitDstStageMask = waitStages;
 	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &commandManager->commandBuffer;
+	submitInfo.pCommandBuffers = &commandManager->commandBuffers[currentFrame];
 
-	VkSemaphore signalSemaphores[] = { syncsManager->renderFinishedSemaphore };
+	VkSemaphore signalSemaphores[] = { syncsManager->renderFinishedSemaphores[currentFrame]};
 	submitInfo.signalSemaphoreCount = 1;
 	submitInfo.pSignalSemaphores = signalSemaphores;
 
-	VkResult result = vkQueueSubmit(device->getGraphicsQueue(), 1, &submitInfo, syncsManager->inFlightFence);
+	VkResult result = vkQueueSubmit(device->getGraphicsQueue(), 1, &submitInfo, syncsManager->inFlightFences[currentFrame]);
 	if (result != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to submit draw command buffer!");
@@ -108,4 +109,6 @@ void Render::drawFrame()
 	presentInfo.pImageIndices = &imageIndex;
 
 	vkQueuePresentKHR(device->getPresentQueue(), &presentInfo);
+
+	currentFrame = (currentFrame + 1) % settings->maxFramesInFlight;
 }

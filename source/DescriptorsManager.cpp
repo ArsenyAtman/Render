@@ -5,13 +5,9 @@
 
 #include "UniformBuffer.h"
 #include "TextureImage.h"
+#include "Settings.h"
 
-namespace
-{
-	const int MAX_FRAMES_IN_FLIGHT = 1;
-}
-
-DescriptorsManager::DescriptorsManager(VkDevice logicalDevice, UniformBuffer* uniformBuffer, TextureImage* textureImage)
+DescriptorsManager::DescriptorsManager(VkDevice logicalDevice, UniformBuffer* uniformBuffer, TextureImage* textureImage, const ApplicationSettings* settings)
 {
 	this->logicalDevice = logicalDevice;
 
@@ -27,8 +23,8 @@ DescriptorsManager::DescriptorsManager(VkDevice logicalDevice, UniformBuffer* un
 		throw std::runtime_error("failed to create descriptor set layout!");
 	}
 
-	createDescriptorPool();
-	createDescriptorSets(uniformBuffer, textureImage);
+	createDescriptorPool(settings);
+	createDescriptorSets(uniformBuffer, textureImage, settings);
 }
 
 DescriptorsManager::~DescriptorsManager()
@@ -37,19 +33,19 @@ DescriptorsManager::~DescriptorsManager()
 	vkDestroyDescriptorSetLayout(logicalDevice, descriptorSetLayout, nullptr);
 }
 
-void DescriptorsManager::createDescriptorPool()
+void DescriptorsManager::createDescriptorPool(const ApplicationSettings* settings)
 {
 	std::array<VkDescriptorPoolSize, 2> poolSizes{};
 	poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+	poolSizes[0].descriptorCount = static_cast<uint32_t>(settings->maxFramesInFlight);
 	poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+	poolSizes[1].descriptorCount = static_cast<uint32_t>(settings->maxFramesInFlight);
 
 	VkDescriptorPoolCreateInfo poolInfo{};
 	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 	poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
 	poolInfo.pPoolSizes = poolSizes.data();
-	poolInfo.maxSets = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+	poolInfo.maxSets = static_cast<uint32_t>(settings->maxFramesInFlight);
 
 	VkResult result = vkCreateDescriptorPool(logicalDevice, &poolInfo, nullptr, &descriptorPool);
 	if (result != VK_SUCCESS)
@@ -58,16 +54,16 @@ void DescriptorsManager::createDescriptorPool()
 	}
 }
 
-void DescriptorsManager::createDescriptorSets(UniformBuffer* uniformBuffer, TextureImage* textureImage)
+void DescriptorsManager::createDescriptorSets(UniformBuffer* uniformBuffer, TextureImage* textureImage, const ApplicationSettings* settings)
 {
-	std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
+	std::vector<VkDescriptorSetLayout> layouts(settings->maxFramesInFlight, descriptorSetLayout);
 	VkDescriptorSetAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 	allocInfo.descriptorPool = descriptorPool;
-	allocInfo.descriptorSetCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+	allocInfo.descriptorSetCount = static_cast<uint32_t>(settings->maxFramesInFlight);
 	allocInfo.pSetLayouts = layouts.data();
 
-	descriptorSets.resize(MAX_FRAMES_IN_FLIGHT);
+	descriptorSets.resize(settings->maxFramesInFlight);
 
 	VkResult result = vkAllocateDescriptorSets(logicalDevice, &allocInfo, descriptorSets.data());
 	if (result != VK_SUCCESS)
@@ -75,7 +71,7 @@ void DescriptorsManager::createDescriptorSets(UniformBuffer* uniformBuffer, Text
 		throw std::runtime_error("failed to allocate descriptor sets!");
 	}
 
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+	for (size_t i = 0; i < settings->maxFramesInFlight; i++)
 	{
 		VkDescriptorBufferInfo bufferInfo{};
 		bufferInfo.buffer = uniformBuffer->uniformBuffers[i];

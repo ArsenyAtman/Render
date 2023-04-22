@@ -2,8 +2,14 @@
 
 #include <stdexcept>
 
-SyncsManager::SyncsManager(VkDevice logicalDevice)
+#include "Settings.h"
+
+SyncsManager::SyncsManager(VkDevice logicalDevice, const ApplicationSettings* settings)
 {
+	imageAvailableSemaphores.resize(settings->maxFramesInFlight);
+	renderFinishedSemaphores.resize(settings->maxFramesInFlight);
+	inFlightFences.resize(settings->maxFramesInFlight);
+
 	VkSemaphoreCreateInfo semaphoreInfo{};
 	semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
@@ -11,12 +17,15 @@ SyncsManager::SyncsManager(VkDevice logicalDevice)
 	fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 	fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-	VkResult result1 = vkCreateSemaphore(logicalDevice, &semaphoreInfo, nullptr, &imageAvailableSemaphore);
-	VkResult result2 = vkCreateSemaphore(logicalDevice, &semaphoreInfo, nullptr, &renderFinishedSemaphore);
-	VkResult result3 = vkCreateFence(logicalDevice, &fenceInfo, nullptr, &inFlightFence);
-	if (result1 != VK_SUCCESS || result2 != VK_SUCCESS || result3 != VK_SUCCESS)
+	for (size_t i = 0; i < settings->maxFramesInFlight; ++i)
 	{
-		throw std::runtime_error("Failed to create semaphores!");
+		VkResult result1 = vkCreateSemaphore(logicalDevice, &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]);
+		VkResult result2 = vkCreateSemaphore(logicalDevice, &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]);
+		VkResult result3 = vkCreateFence(logicalDevice, &fenceInfo, nullptr, &inFlightFences[i]);
+		if (result1 != VK_SUCCESS || result2 != VK_SUCCESS || result3 != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create semaphores!");
+		}
 	}
 
 	this->logicalDevice = logicalDevice;
@@ -24,7 +33,18 @@ SyncsManager::SyncsManager(VkDevice logicalDevice)
 
 SyncsManager::~SyncsManager()
 {
-	vkDestroySemaphore(logicalDevice, imageAvailableSemaphore, nullptr);
-	vkDestroySemaphore(logicalDevice, renderFinishedSemaphore, nullptr);
-	vkDestroyFence(logicalDevice, inFlightFence, nullptr);
+	for (size_t i = 0; i < imageAvailableSemaphores.size(); ++i)
+	{
+		vkDestroySemaphore(logicalDevice, imageAvailableSemaphores[i], nullptr);
+	}
+
+	for (size_t i = 0; i < renderFinishedSemaphores.size(); ++i)
+	{
+		vkDestroySemaphore(logicalDevice, renderFinishedSemaphores[i], nullptr);
+	}
+
+	for (size_t i = 0; i < inFlightFences.size(); ++i)
+	{
+		vkDestroyFence(logicalDevice, inFlightFences[i], nullptr);
+	}
 }

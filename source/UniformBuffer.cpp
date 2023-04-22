@@ -8,23 +8,19 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Helpers.h"
+#include "Settings.h"
 
-namespace
-{
-	const int MAX_FRAMES_IN_FLIGHT = 1;
-}
-
-UniformBuffer::UniformBuffer(VkDevice logicalDevice, VkPhysicalDevice physicalDevice)
+UniformBuffer::UniformBuffer(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, const ApplicationSettings* settings)
 {
 	this->logicalDevice = logicalDevice;
 
 	VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 
-	uniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-	uniformBuffersMemory.resize(MAX_FRAMES_IN_FLIGHT);
-	uniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
+	uniformBuffers.resize(settings->maxFramesInFlight);
+	uniformBuffersMemory.resize(settings->maxFramesInFlight);
+	uniformBuffersMapped.resize(settings->maxFramesInFlight);
 
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+	for (size_t i = 0; i < settings->maxFramesInFlight; i++)
 	{
 		Helpers::createBuffer(logicalDevice, physicalDevice, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffers[i], uniformBuffersMemory[i]);
 		vkMapMemory(logicalDevice, uniformBuffersMemory[i], 0, bufferSize, 0, &uniformBuffersMapped[i]);
@@ -39,9 +35,13 @@ UniformBuffer::UniformBuffer(VkDevice logicalDevice, VkPhysicalDevice physicalDe
 
 UniformBuffer::~UniformBuffer()
 {
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+	for (size_t i = 0; i < uniformBuffers.size(); ++i)
 	{
 		vkDestroyBuffer(logicalDevice, uniformBuffers[i], nullptr);
+	}
+
+	for (size_t i = 0; i < uniformBuffersMemory.size(); ++i)
+	{
 		vkFreeMemory(logicalDevice, uniformBuffersMemory[i], nullptr);
 	}
 }

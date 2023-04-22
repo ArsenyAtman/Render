@@ -9,13 +9,14 @@
 #include "DescriptorsManager.h"
 
 #include "Device.h"
+#include "Settings.h"
 
-CommandManager::CommandManager(VkDevice logicalDevice, const QueueFamilyIndices& queueFamilyIndices)
+CommandManager::CommandManager(VkDevice logicalDevice, const QueueFamilyIndices& queueFamilyIndices, const ApplicationSettings* settings)
 {
 	this->logicalDevice = logicalDevice;
 
 	createCommandPool(queueFamilyIndices);
-	createCommandBuffer();
+	createCommandBuffers(settings);
 }
 
 CommandManager::~CommandManager()
@@ -37,31 +38,31 @@ void CommandManager::createCommandPool(const QueueFamilyIndices& queueFamilyIndi
 	}
 }
 
-void CommandManager::createCommandBuffer()
+void CommandManager::createCommandBuffers(const ApplicationSettings* settings)
 {
+	commandBuffers.resize(settings->maxFramesInFlight);
+
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	allocInfo.commandPool = commandPool;
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	allocInfo.commandBufferCount = 1;
+	allocInfo.commandBufferCount = settings->maxFramesInFlight;
 
-	VkResult result = vkAllocateCommandBuffers(logicalDevice, &allocInfo, &commandBuffer);
+	VkResult result = vkAllocateCommandBuffers(logicalDevice, &allocInfo, commandBuffers.data());
 	if (result != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to allocate command buffers!");
 	}
 }
 
-void CommandManager::recordCommandBuffer(uint32_t imageIndex, SwapChainManager* swapChainManager, GraphicsPipeline* graphicsPipeline, VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, DescriptorsManager* descriptorsManager)
+void CommandManager::recordCommandBuffer(uint32_t currentFrame, uint32_t imageIndex, SwapChainManager* swapChainManager, GraphicsPipeline* graphicsPipeline, VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, DescriptorsManager* descriptorsManager)
 {
-	vkResetCommandBuffer(commandBuffer, 0);
+	vkResetCommandBuffer(commandBuffers[currentFrame], 0);
 
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	beginInfo.flags = 0; // Optional
-	beginInfo.pInheritanceInfo = nullptr; // Optional
 
-	VkResult result = vkBeginCommandBuffer(commandBuffer, &beginInfo);
+	VkResult result = vkBeginCommandBuffer(commandBuffers[currentFrame], &beginInfo);
 	if (result != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to begin recording command buffer!");
@@ -80,9 +81,9 @@ void CommandManager::recordCommandBuffer(uint32_t imageIndex, SwapChainManager* 
 	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 	renderPassInfo.pClearValues = clearValues.data();
 
-	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+	vkCmdBeginRenderPass(commandBuffers[currentFrame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->graphicsPipeline);
+	vkCmdBindPipeline(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->graphicsPipeline);
 
 	VkViewport viewport{};
 	viewport.x = 0.0f;
@@ -91,26 +92,26 @@ void CommandManager::recordCommandBuffer(uint32_t imageIndex, SwapChainManager* 
 	viewport.height = static_cast<float>(swapChainManager->swapChainExtent.height);
 	viewport.minDepth = 0.0f;
 	viewport.maxDepth = 1.0f;
-	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+	vkCmdSetViewport(commandBuffers[currentFrame], 0, 1, &viewport);
 
 	VkRect2D scissor{};
 	scissor.offset = { 0, 0 };
 	scissor.extent = swapChainManager->swapChainExtent;
-	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+	vkCmdSetScissor(commandBuffers[currentFrame], 0, 1, &scissor);
 
 	VkBuffer vertexBuffers[] = { vertexBuffer->vertexBuffer };
 	VkDeviceSize offsets[] = { 0 };
-	vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+	vkCmdBindVertexBuffers(commandBuffers[currentFrame], 0, 1, vertexBuffers, offsets);
 
-	vkCmdBindIndexBuffer(commandBuffer, indexBuffer->indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+	vkCmdBindIndexBuffer(commandBuffers[currentFrame], indexBuffer->indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->pipelineLayout, 0, 1, &descriptorsManager->descriptorSets[0], 0, nullptr);
+	vkCmdBindDescriptorSets(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->pipelineLayout, 0, 1, &descriptorsManager->descriptorSets[0], 0, nullptr);
 
-	vkCmdDrawIndexed(commandBuffer, indexBuffer->indexBufferSize, 1, 0, 0, 0);
+	vkCmdDrawIndexed(commandBuffers[currentFrame], indexBuffer->indexBufferSize, 1, 0, 0, 0);
 
-	vkCmdEndRenderPass(commandBuffer);
+	vkCmdEndRenderPass(commandBuffers[currentFrame]);
 
-	VkResult result2 = vkEndCommandBuffer(commandBuffer);
+	VkResult result2 = vkEndCommandBuffer(commandBuffers[currentFrame]);
 	if (result2 != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to record command buffer!");

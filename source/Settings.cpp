@@ -30,6 +30,8 @@ ApplicationSettings* Settings::extractApplicationSettingsFromFile(const std::str
 	std::string& texturePath = ini["model"]["pathToTexture"];
 	std::vector<std::string> shaderPaths = splitString(ini["model"]["pathsToShaders"], ',');
 
+	std::string& maxFramesInFlight = ini["render"]["maxFramesInFlight"];
+
 	ApplicationSettings* applicationSettings = new ApplicationSettings();
 
 	applicationSettings->windowWidth = static_cast<uint32_t>(std::stoul(windowWidth));
@@ -39,6 +41,8 @@ ApplicationSettings* Settings::extractApplicationSettingsFromFile(const std::str
 	applicationSettings->meshPath = modelPath;
 	applicationSettings->texturePath = texturePath;
 	applicationSettings->shaderPaths = shaderPaths;
+
+	applicationSettings->maxFramesInFlight = static_cast<uint32_t>(std::stoul(maxFramesInFlight));
 
 	return applicationSettings;
 }

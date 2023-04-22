@@ -6,6 +6,8 @@
 
 #include <vulkan/vulkan.h>
 
+struct ApplicationSettings;
+
 struct UniformBufferObject
 {
     glm::mat4 model;
@@ -18,7 +20,7 @@ class UniformBuffer
 
 public:
 
-    UniformBuffer(VkDevice logicalDevice, VkPhysicalDevice physicalDevice);
+    UniformBuffer(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, const ApplicationSettings* settings);
     virtual ~UniformBuffer();
 
     void update(uint32_t currentFrame, VkExtent2D extent);

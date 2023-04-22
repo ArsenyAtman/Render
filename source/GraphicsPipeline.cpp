@@ -7,11 +7,6 @@
 #include "Shader.h"
 #include "DescriptorsManager.h"
 
-namespace
-{
-	const int MAX_FRAMES_IN_FLIGHT = 1;
-}
-
 GraphicsPipeline::GraphicsPipeline(VkDevice logicalDevice, VkRenderPass renderPass, DescriptorsManager* descriptorsManager, const std::vector<Shader*>& shaders)
 {
 	this->logicalDevice = logicalDevice;

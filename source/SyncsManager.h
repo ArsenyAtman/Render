@@ -1,18 +1,22 @@
 #pragma once
 
+#include <vector>
+
 #include <vulkan/vulkan.h>
+
+struct ApplicationSettings;
 
 class SyncsManager
 {
 
 public:
 
-	SyncsManager(VkDevice logicalDevice);
+	SyncsManager(VkDevice logicalDevice, const ApplicationSettings* settings);
 	virtual ~SyncsManager();
 
-	VkSemaphore imageAvailableSemaphore;
-	VkSemaphore renderFinishedSemaphore;
-	VkFence inFlightFence;
+	std::vector<VkSemaphore> imageAvailableSemaphores;
+	std::vector<VkSemaphore> renderFinishedSemaphores;
+	std::vector<VkFence> inFlightFences;
 
 private:
 
