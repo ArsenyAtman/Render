@@ -16,9 +16,9 @@ Buffer::~Buffer()
     vkFreeMemory(getDevice()->getLogicalDevice(), bufferMemory, nullptr);
 }
 
-void Buffer::constructBuffer(const void* data, uint32_t elementSize, uint32_t countOfElements, VkBufferUsageFlagBits usageFlags)
+void Buffer::constructBuffer(const void* data, int elementSize, size_t countOfElements, VkBufferUsageFlagBits usageFlags)
 {
-    this->bufferSize = countOfElements;
+    this->bufferSize = static_cast<uint32_t>(countOfElements);
 
     VkDeviceSize bufferMemorySize = elementSize * countOfElements;
 

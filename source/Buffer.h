@@ -17,7 +17,7 @@ public:
 
 protected:
 
-	void constructBuffer(const void* data, uint32_t elementSize, uint32_t countOfElements, VkBufferUsageFlagBits usageFlags);
+	void constructBuffer(const void* data, int elementSize, size_t countOfElements, VkBufferUsageFlagBits usageFlags);
 
 	VkBuffer getBuffer() const { return buffer; }
 
