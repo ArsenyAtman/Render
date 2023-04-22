@@ -70,9 +70,6 @@
     <ClCompile Include="source\ModelLoader.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="source\RenderUnit.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
     <ClCompile Include="source\Device.cpp">
       <Filter>source</Filter>
     </ClCompile>
@@ -118,6 +115,9 @@
     <ClCompile Include="source\Buffer.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\CommandBufferBindable.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CommandManager.h">
@@ -157,9 +157,6 @@
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="source\ModelLoader.h">
-      <Filter>source</Filter>
-    </ClInclude>
-    <ClInclude Include="source\RenderUnit.h">
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="source\Device.h">
@@ -205,6 +202,9 @@
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="source\Buffer.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\CommandBufferBindable.h">
       <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>

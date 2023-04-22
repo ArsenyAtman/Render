@@ -144,6 +144,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Application.cpp" />
+    <ClCompile Include="source\CommandBufferBindable.cpp" />
     <ClCompile Include="source\CommandManager.cpp" />
     <ClCompile Include="source\DepthBuffer.cpp" />
     <ClCompile Include="source\DescriptorsManager.cpp" />
@@ -159,7 +160,6 @@
     <ClCompile Include="source\ModelLoader.cpp" />
     <ClCompile Include="source\Render.cpp" />
     <ClCompile Include="source\RenderModule.cpp" />
-    <ClCompile Include="source\RenderUnit.cpp" />
     <ClCompile Include="source\Settings.cpp" />
     <ClCompile Include="source\Shader.cpp" />
     <ClCompile Include="source\ShaderCompiler.cpp" />
@@ -176,6 +176,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Application.h" />
+    <ClInclude Include="source\CommandBufferBindable.h" />
     <ClInclude Include="source\CommandManager.h" />
     <ClInclude Include="source\DepthBuffer.h" />
     <ClInclude Include="source\DescriptorsManager.h" />
@@ -190,7 +191,6 @@
     <ClInclude Include="source\ModelLoader.h" />
     <ClInclude Include="source\Render.h" />
     <ClInclude Include="source\RenderModule.h" />
-    <ClInclude Include="source\RenderUnit.h" />
     <ClInclude Include="source\Settings.h" />
     <ClInclude Include="source\Shader.h" />
     <ClInclude Include="source\ShaderCompiler.h" />
