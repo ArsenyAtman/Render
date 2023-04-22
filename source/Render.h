@@ -33,6 +33,8 @@ public:
 
 	const std::vector<Buffer*>& getBuffers() const { return buffers; }
 	Buffer* getIndexBuffer() const { return indexBuffer; }
+	UniformBuffer* getUniformBuffer() const { return uniformBuffer; }
+	TextureImage* getTextureImage() const { return textureImage; }
 	DescriptorsManager* getDescriptorsManager() const { return descriptorsManager; }
 	SwapChainManager* getSwapChain() const { return swapChainManager; }
 	GraphicsPipeline* getGraphicsPipeline() const { return graphicsPipeline; }

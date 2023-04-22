@@ -1,30 +1,28 @@
 #pragma once
 
+#include "RenderModule.h"
+
 #include <vector>
 
 #include <vulkan/vulkan.h>
 
-class UniformBuffer;
-class TextureImage;
-
-struct ApplicationSettings;
-
-class DescriptorsManager
+class DescriptorsManager : public RenderModule
 {
-
 public:
-	DescriptorsManager(VkDevice logicalDevice, UniformBuffer* uniformBuffer, TextureImage* textureImage, const ApplicationSettings* settings);
+
+	DescriptorsManager(Render* render, Device* device, const ApplicationSettings* settings);
 	virtual ~DescriptorsManager();
 
-	void createDescriptorPool(const ApplicationSettings* settings);
-	void createDescriptorSets(UniformBuffer* uniformBuffer, TextureImage* textureImage, const ApplicationSettings* settings);
+	const VkDescriptorSetLayout* getDescriptorSetLayout() const;
+	const VkDescriptorSet* getDescriptorSetForCurrentFrame() const;
+
+private:
+
+	void createDescriptorSetLayout();
+	void createDescriptorPool();
+	void createDescriptorSets();
 
 	VkDescriptorSetLayout descriptorSetLayout;
 	VkDescriptorPool descriptorPool;
 	std::vector<VkDescriptorSet> descriptorSets;
-
-private:
-
-	VkDevice logicalDevice;
 };
-
