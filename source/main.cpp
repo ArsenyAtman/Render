@@ -5,6 +5,11 @@
 #include "Application.h"
 
 /**
+ * TODOOO: wrap currentImage into getters of the classes!!!
+ * TODO00: make Buffers part of CommandManager
+ * TODO)O: make UniformBuffer and Texture part of DescriptorsManager
+ * TODOOP: make DescriptorsManager part of GraphicsPipeline
+ * 
  * TODO: Handle VK_ERROR_INCOMPATIBLE_DRIVER.
  * TODO: Check extension support.
  * TODO: Message callback in validation layers.
