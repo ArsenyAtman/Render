@@ -74,7 +74,7 @@ void Render::drawFrame()
 	uint32_t imageIndex;
 	vkAcquireNextImageKHR(device->getLogicalDevice(), swapChainManager->swapChain, UINT64_MAX, syncsManager->imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
 
-	uniformBuffer->update(0, swapChainManager->swapChainExtent);
+	uniformBuffer->update(currentFrame, swapChainManager->swapChainExtent);
 
 	commandManager->recordCommandBuffer(currentFrame, imageIndex, swapChainManager, graphicsPipeline, vertexBuffer, indexBuffer, descriptorsManager);
 
