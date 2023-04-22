@@ -12,19 +12,24 @@ struct ApplicationSettings
 
 	uint32_t windowWidth = 0;
 	uint32_t windowHeight = 0;
-
 	std::string windowName = "";
 
-	bool withValidationLayers = true;
-	std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
+	bool withValidationLayers = false;
+	std::vector<const char*> validationLayers = {};
+	std::vector<const char*> deviceExtensions = {};
+	uint32_t maxFramesInFlight = 0;
 
-	const std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+	std::vector<float> viewPoint = {};
+	std::vector<float> viewTarget = {};
+	float fov = 0.0f;
+	float perspectiveNear = 0.0f;
+	float perspectiveFar = 0.0f;
 
 	std::string meshPath;
 	std::string texturePath;
 	std::vector<std::string> shaderPaths;
-
-	uint32_t maxFramesInFlight;
+	std::vector<float> rotation = {};
+	float rotationSpeed = 0.0f;
 };
 
 class Settings

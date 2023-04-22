@@ -34,5 +34,5 @@ public:
 private:
 
     VkDevice logicalDevice;
+    const ApplicationSettings* settings;
 };
-
