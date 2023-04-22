@@ -113,5 +113,7 @@ Shader* ModelLoader::loadShader(const std::string& shaderPath)
 
     file.close();
 
-    return new Shader(code);
+    ShaderType shaderType = (shaderPath.find("vert") != std::string::npos) ? ShaderType::Vertex : ShaderType::Fragment;
+
+    return new Shader(shaderType, code);
 }

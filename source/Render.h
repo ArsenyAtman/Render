@@ -29,6 +29,8 @@ public:
 
 	void tick();
 
+	uint32_t getCurrentFrame() const { return currentFrame; }
+
 	const std::vector<Buffer*>& getBuffers() const { return buffers; }
 	Buffer* getIndexBuffer() const { return indexBuffer; }
 	DescriptorsManager* getDescriptorsManager() const { return descriptorsManager; }

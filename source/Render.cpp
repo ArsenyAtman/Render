@@ -35,9 +35,9 @@ Render::Render(Device* device, Window* window, Model* model, const ApplicationSe
 
 	uniformBuffer = new UniformBuffer(device->getLogicalDevice(), device->getPhysicalDevice(), settings);
 	textureImage = new TextureImage(device->getLogicalDevice(), device->getPhysicalDevice(), device->getGraphicsQueue(), commandManager->commandPool, model->getTexture());
-	descriptorsManager = new DescriptorsManager(device->getLogicalDevice(), uniformBuffer, textureImage, settings);
+	descriptorsManager = new DescriptorsManager(this, device, settings);
 	swapChainManager = new SwapChainManager(device->getLogicalDevice(), device->getPhysicalDevice(), device->getGraphicsQueue(), commandManager->commandPool, device->getQueueIndices(), window->getSurface(), window);
-	graphicsPipeline = new GraphicsPipeline(device->getLogicalDevice(), swapChainManager->renderPass, descriptorsManager, model->getShaders());
+	graphicsPipeline = new GraphicsPipeline(this, device, settings, model->getShaders());
 	syncsManager = new SyncsManager(device->getLogicalDevice(), settings);
 }
 

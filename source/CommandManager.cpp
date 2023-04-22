@@ -82,7 +82,7 @@ void CommandManager::recordCommandBuffer(uint32_t currentFrame, uint32_t imageIn
 
 	vkCmdBeginRenderPass(commandBuffers[currentFrame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-	vkCmdBindPipeline(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, getRender()->getGraphicsPipeline()->graphicsPipeline);
+	getRender()->getGraphicsPipeline()->bindToCommandBuffer(commandBuffers[currentFrame]);
 
 	VkViewport viewport{};
 	viewport.x = 0.0f;
@@ -102,8 +102,6 @@ void CommandManager::recordCommandBuffer(uint32_t currentFrame, uint32_t imageIn
 	{
 		buffer->bindToCommandBuffer(commandBuffers[currentFrame]);
 	}
-	
-	vkCmdBindDescriptorSets(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, getRender()->getGraphicsPipeline()->pipelineLayout, 0, 1, &getRender()->getDescriptorsManager()->descriptorSets[0], 0, nullptr);
 
 	vkCmdDrawIndexed(commandBuffers[currentFrame], getRender()->getIndexBuffer()->getBufferSize(), 1, 0, 0, 0);
 

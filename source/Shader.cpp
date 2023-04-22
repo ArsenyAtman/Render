@@ -1,6 +1,7 @@
 #include "Shader.h"
 
-Shader::Shader(std::vector<char>& shaderCode)
+Shader::Shader(ShaderType shaderType, const std::vector<char>& shaderCode)
 {
+	this->shaderType = shaderType;
 	this->code = shaderCode;
 }
