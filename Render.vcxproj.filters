@@ -20,9 +20,6 @@
     <None Include="shaders\shader.frag">
       <Filter>shaders</Filter>
     </None>
-    <None Include="shaders\compile.bat">
-      <Filter>shaders</Filter>
-    </None>
     <None Include=".gitattributes" />
     <None Include=".gitignore" />
     <None Include="README.md" />
@@ -112,6 +109,9 @@
     <ClCompile Include="source\IndexBuffer.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\ShaderCompiler.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CommandManager.h">
@@ -190,6 +190,9 @@
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="source\IndexBuffer.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ShaderCompiler.h">
       <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>

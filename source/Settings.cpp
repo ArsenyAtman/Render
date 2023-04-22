@@ -28,6 +28,11 @@ ApplicationSettings* Settings::extractApplicationSettingsFromFile(const std::str
 	std::string& windowHeight = ini["window"]["height"];
 	std::string& windowName = ini["window"]["name"];
 
+	std::string pathToCompiler = ini["shaderCompiler"]["pathToCompiler"];
+	std::string temporaryBatFile = ini["shaderCompiler"]["temporaryBatFile"];
+	std::vector<std::string> shadersToCompile = splitString(ini["shaderCompiler"]["shadersToCompile"], ',');
+	std::vector<std::string> compileShadersTo = splitString(ini["shaderCompiler"]["compileShadersTo"], ',');
+
 	std::string& withValidationLayers = ini["render"]["withValidationLayers"];
 	std::vector<std::string> validationLayers = splitString(ini["render"]["validationLayers"], ',');
 	std::vector<std::string> deviceExtensions = splitString(ini["render"]["deviceExtensions"], ',');
@@ -52,6 +57,11 @@ ApplicationSettings* Settings::extractApplicationSettingsFromFile(const std::str
 	applicationSettings->windowWidth = static_cast<uint32_t>(std::stoul(windowWidth));
 	applicationSettings->windowHeight = static_cast<uint32_t>(std::stoul(windowHeight));
 	applicationSettings->windowName = windowName;
+
+	applicationSettings->pathToCompiler = pathToCompiler;
+	applicationSettings->temporaryBatFile = temporaryBatFile;
+	applicationSettings->shadersToCompile = shadersToCompile;
+	applicationSettings->compileShadersTo = compileShadersTo;
 
 	applicationSettings->withValidationLayers = static_cast<bool>(std::stoul(withValidationLayers));
 	for (const std::string& validationLayer : validationLayers)

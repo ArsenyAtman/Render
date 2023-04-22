@@ -1,6 +1,7 @@
 #pragma once
 
 class Settings;
+class ShaderCompiler;
 class Window;
 class Device;
 class ModelLoader;
@@ -19,6 +20,7 @@ private:
 	void deinitSystems();
 
 	Settings* settings = nullptr;
+	ShaderCompiler* shaderCompiler = nullptr;
 	Window* window = nullptr;
 	Device* device = nullptr;
 	ModelLoader* modelLoader = nullptr;

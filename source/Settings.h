@@ -14,6 +14,11 @@ struct ApplicationSettings
 	uint32_t windowHeight = 0;
 	std::string windowName = "";
 
+	std::string pathToCompiler = "";
+	std::string temporaryBatFile = "";
+	std::vector<std::string> shadersToCompile = {};
+	std::vector<std::string> compileShadersTo = {};
+
 	bool withValidationLayers = false;
 	std::vector<const char*> validationLayers = {};
 	std::vector<const char*> deviceExtensions = {};

@@ -1,6 +1,7 @@
 #include "Application.h"
 
 #include "Settings.h"
+#include "ShaderCompiler.h"
 #include "Window.h"
 #include "Device.h"
 #include "ModelLoader.h"
@@ -24,6 +25,8 @@ void Application::initSystems()
 	settings = new Settings("settings/settings.ini");
 	const ApplicationSettings* applicationSettings = settings->getApplicationSettings();
 
+	shaderCompiler = new ShaderCompiler(applicationSettings);
+
 	window = new Window(applicationSettings);
 	device = new Device(window, applicationSettings);
 
@@ -46,5 +49,6 @@ void Application::deinitSystems()
 	delete render;
 	delete device;
 	delete window;
+	delete shaderCompiler;
 	delete settings;
 }
