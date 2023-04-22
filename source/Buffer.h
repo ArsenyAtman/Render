@@ -4,14 +4,14 @@
 
 #include <vulkan/vulkan.h>
 
-class MeshBuffer : public RenderModule
+class Buffer : public RenderModule
 {
 public:
 
-	MeshBuffer(Render* render, Device* device, const ApplicationSettings* settings);
-	virtual ~MeshBuffer();
+	Buffer(Render* render, Device* device, const ApplicationSettings* settings);
+	virtual ~Buffer();
 
-	virtual void bindBuffer(VkCommandBuffer commandBuffer) { return; }
+	virtual void bindBuffer(VkCommandBuffer commandBuffer) const { return; }
 
 	uint32_t getBufferSize() const { return bufferSize; }
 

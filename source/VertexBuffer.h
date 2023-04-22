@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MeshBuffer.h"
+#include "Buffer.h"
 
 #include <vector>
 
@@ -8,13 +8,13 @@
 
 class Mesh;
 
-class VertexBuffer : public MeshBuffer
+class VertexBuffer : public Buffer
 {
 
 public:
 
 	VertexBuffer(Render* render, Device* device, const ApplicationSettings* settings, const Mesh* mesh);
 
-	virtual void bindBuffer(VkCommandBuffer commandBuffer) override;
+	virtual void bindBuffer(VkCommandBuffer commandBuffer) const override;
 };
 

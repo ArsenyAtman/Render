@@ -98,8 +98,10 @@ void CommandManager::recordCommandBuffer(uint32_t currentFrame, uint32_t imageIn
 	scissor.extent = getRender()->getSwapChain()->swapChainExtent;
 	vkCmdSetScissor(commandBuffers[currentFrame], 0, 1, &scissor);
 
-	getRender()->getVertexBuffer()->bindBuffer(commandBuffers[currentFrame]);
-	getRender()->getIndexBuffer()->bindBuffer(commandBuffers[currentFrame]);
+	for (const Buffer* buffer : getRender()->getBuffers())
+	{
+		buffer->bindBuffer(commandBuffers[currentFrame]);
+	}
 	
 	vkCmdBindDescriptorSets(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, getRender()->getGraphicsPipeline()->pipelineLayout, 0, 1, &getRender()->getDescriptorsManager()->descriptorSets[0], 0, nullptr);
 

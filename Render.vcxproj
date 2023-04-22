@@ -154,7 +154,7 @@
     <ClCompile Include="source\Instance.cpp" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\Mesh.cpp" />
-    <ClCompile Include="source\MeshBuffer.cpp" />
+    <ClCompile Include="source\Buffer.cpp" />
     <ClCompile Include="source\Model.cpp" />
     <ClCompile Include="source\ModelLoader.cpp" />
     <ClCompile Include="source\Render.cpp" />
@@ -185,7 +185,7 @@
     <ClInclude Include="source\IndexBuffer.h" />
     <ClInclude Include="source\Instance.h" />
     <ClInclude Include="source\Mesh.h" />
-    <ClInclude Include="source\MeshBuffer.h" />
+    <ClInclude Include="source\Buffer.h" />
     <ClInclude Include="source\Model.h" />
     <ClInclude Include="source\ModelLoader.h" />
     <ClInclude Include="source\Render.h" />

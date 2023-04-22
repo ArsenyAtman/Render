@@ -1,22 +1,22 @@
-#include "MeshBuffer.h"
+#include "Buffer.h"
 
 #include "Helpers.h"
 #include "Render.h"
 #include "Device.h"
 #include "Settings.h"
 
-MeshBuffer::MeshBuffer(Render* render, Device* device, const ApplicationSettings* settings) : RenderModule(render, device, settings)
+Buffer::Buffer(Render* render, Device* device, const ApplicationSettings* settings) : RenderModule(render, device, settings)
 {
     // ...
 }
 
-MeshBuffer::~MeshBuffer()
+Buffer::~Buffer()
 {
     vkDestroyBuffer(getDevice()->getLogicalDevice(), buffer, nullptr);
     vkFreeMemory(getDevice()->getLogicalDevice(), bufferMemory, nullptr);
 }
 
-void MeshBuffer::constructBuffer(const void* data, uint32_t elementSize, uint32_t countOfElements, VkBufferUsageFlagBits usageFlags)
+void Buffer::constructBuffer(const void* data, uint32_t elementSize, uint32_t countOfElements, VkBufferUsageFlagBits usageFlags)
 {
     this->bufferSize = countOfElements;
 

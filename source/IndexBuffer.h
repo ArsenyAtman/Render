@@ -1,16 +1,16 @@
 #pragma once
 
-#include "MeshBuffer.h"
+#include "Buffer.h"
 
 #include <vulkan/vulkan.h>
 
 class Mesh;
 
-class IndexBuffer : public MeshBuffer
+class IndexBuffer : public Buffer
 {
 public:
 
 	IndexBuffer(Render* render, Device* device, const ApplicationSettings* settings, const Mesh* mesh);
 
-	virtual void bindBuffer(VkCommandBuffer commandBuffer) override;
+	virtual void bindBuffer(VkCommandBuffer commandBuffer) const override;
 };

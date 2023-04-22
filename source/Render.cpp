@@ -6,8 +6,6 @@
 
 #include "SwapChainManager.h"
 #include "GraphicsPipeline.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
 #include "UniformBuffer.h"
 #include "CommandManager.h"
 #include "SyncsManager.h"
@@ -21,6 +19,9 @@
 #include "Window.h"
 #include "Device.h"
 #include "Model.h"
+#include "Buffer.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
 
 Render::Render(Device* device, Window* window, Model* model, const ApplicationSettings* settings)
 {
@@ -28,8 +29,10 @@ Render::Render(Device* device, Window* window, Model* model, const ApplicationSe
 	this->settings = settings;
 
 	commandManager = new CommandManager(this, device, settings);
-	vertexBuffer = new VertexBuffer(this, device, settings, model->getMesh());
+	buffers.push_back(new VertexBuffer(this, device, settings, model->getMesh()));
 	indexBuffer = new IndexBuffer(this, device, settings, model->getMesh());
+	buffers.push_back(indexBuffer);
+
 	uniformBuffer = new UniformBuffer(device->getLogicalDevice(), device->getPhysicalDevice(), settings);
 	textureImage = new TextureImage(device->getLogicalDevice(), device->getPhysicalDevice(), device->getGraphicsQueue(), commandManager->commandPool, model->getTexture());
 	descriptorsManager = new DescriptorsManager(device->getLogicalDevice(), uniformBuffer, textureImage, settings);
@@ -48,8 +51,10 @@ Render::~Render()
 	delete descriptorsManager;
 	delete textureImage;
 	delete uniformBuffer;
-	delete indexBuffer;
-	delete vertexBuffer;
+	for (Buffer* buffer : buffers)
+	{
+		delete buffer;
+	}
 	delete commandManager;
 }
 

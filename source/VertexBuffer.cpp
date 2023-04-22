@@ -5,12 +5,12 @@
 
 #include "Mesh.h"
 
-VertexBuffer::VertexBuffer(Render* render, Device* device, const ApplicationSettings* settings, const Mesh* mesh) : MeshBuffer(render, device, settings)
+VertexBuffer::VertexBuffer(Render* render, Device* device, const ApplicationSettings* settings, const Mesh* mesh) : Buffer(render, device, settings)
 {
 	constructBuffer(mesh->getVertices().data(), sizeof(mesh->getVertices()[0]), mesh->getVertices().size(), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
 }
 
-void VertexBuffer::bindBuffer(VkCommandBuffer commandBuffer)
+void VertexBuffer::bindBuffer(VkCommandBuffer commandBuffer) const
 {
 	VkBuffer vertexBuffers[] = { getBuffer() };
 	VkDeviceSize offsets[] = { 0 };

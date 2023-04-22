@@ -115,7 +115,7 @@
     <ClCompile Include="source\RenderModule.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="source\MeshBuffer.cpp">
+    <ClCompile Include="source\Buffer.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -204,7 +204,7 @@
     <ClInclude Include="source\RenderModule.h">
       <Filter>source</Filter>
     </ClInclude>
-    <ClInclude Include="source\MeshBuffer.h">
+    <ClInclude Include="source\Buffer.h">
       <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>

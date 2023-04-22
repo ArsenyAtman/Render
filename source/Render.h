@@ -4,8 +4,6 @@
 
 #include <vulkan/vulkan.h>
 
-class IndexBuffer;
-class VertexBuffer;
 class UniformBuffer;
 class SwapChainManager;
 class GraphicsPipeline;
@@ -18,6 +16,7 @@ class Settings;
 class Window;
 class Device;
 class Model;
+class Buffer;
 
 struct ApplicationSettings;
 
@@ -30,10 +29,8 @@ public:
 
 	void tick();
 
-	VertexBuffer* getVertexBuffer() const { return vertexBuffer; }
-	IndexBuffer* getIndexBuffer() const { return indexBuffer; }
-	//UniformBuffer* getUniformBuffer() const { return uniformBuffer; }
-	//TextureImage* getTextureImage() const { return textureImage; }
+	const std::vector<Buffer*>& getBuffers() const { return buffers; }
+	Buffer* getIndexBuffer() const { return indexBuffer; }
 	DescriptorsManager* getDescriptorsManager() const { return descriptorsManager; }
 	SwapChainManager* getSwapChain() const { return swapChainManager; }
 	GraphicsPipeline* getGraphicsPipeline() const { return graphicsPipeline; }
@@ -41,8 +38,9 @@ public:
 
 private:
 
-	VertexBuffer* vertexBuffer = nullptr;
-	IndexBuffer* indexBuffer = nullptr;
+	std::vector<Buffer*> buffers;
+	Buffer* indexBuffer = nullptr;
+
 	UniformBuffer* uniformBuffer = nullptr;
 	TextureImage* textureImage = nullptr;
 	DescriptorsManager* descriptorsManager = nullptr;
