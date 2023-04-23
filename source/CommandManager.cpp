@@ -54,14 +54,14 @@ void CommandManager::createCommandBuffers()
 	}
 }
 
-void CommandManager::recordCommandBuffer(uint32_t currentFrame, uint32_t imageIndex)
+void CommandManager::recordCommandBuffer(uint32_t imageIndex)
 {
-	vkResetCommandBuffer(commandBuffers[currentFrame], 0);
+	vkResetCommandBuffer(getCommandBufferForCurrentFrame(), 0);
 
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-	VkResult commandBufferBeginResult = vkBeginCommandBuffer(commandBuffers[currentFrame], &beginInfo);
+	VkResult commandBufferBeginResult = vkBeginCommandBuffer(getCommandBufferForCurrentFrame(), &beginInfo);
 	if (commandBufferBeginResult != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to start recording command buffer!");
@@ -80,9 +80,9 @@ void CommandManager::recordCommandBuffer(uint32_t currentFrame, uint32_t imageIn
 	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 	renderPassInfo.pClearValues = clearValues.data();
 
-	vkCmdBeginRenderPass(commandBuffers[currentFrame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+	vkCmdBeginRenderPass(getCommandBufferForCurrentFrame(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-	getRender()->getGraphicsPipeline()->bindToCommandBuffer(commandBuffers[currentFrame]);
+	getRender()->getGraphicsPipeline()->bindToCommandBuffer(getCommandBufferForCurrentFrame());
 
 	VkViewport viewport{};
 	viewport.x = 0.0f;
@@ -91,25 +91,30 @@ void CommandManager::recordCommandBuffer(uint32_t currentFrame, uint32_t imageIn
 	viewport.height = static_cast<float>(getRender()->getSwapChain()->swapChainExtent.height);
 	viewport.minDepth = 0.0f;
 	viewport.maxDepth = 1.0f;
-	vkCmdSetViewport(commandBuffers[currentFrame], 0, 1, &viewport);
+	vkCmdSetViewport(getCommandBufferForCurrentFrame(), 0, 1, &viewport);
 
 	VkRect2D scissor{};
 	scissor.offset = { 0, 0 };
 	scissor.extent = getRender()->getSwapChain()->swapChainExtent;
-	vkCmdSetScissor(commandBuffers[currentFrame], 0, 1, &scissor);
+	vkCmdSetScissor(getCommandBufferForCurrentFrame(), 0, 1, &scissor);
 
 	for (const Buffer* buffer : getRender()->getBuffers())
 	{
-		buffer->bindToCommandBuffer(commandBuffers[currentFrame]);
+		buffer->bindToCommandBuffer(getCommandBufferForCurrentFrame());
 	}
 
-	vkCmdDrawIndexed(commandBuffers[currentFrame], getRender()->getIndexBuffer()->getBufferSize(), 1, 0, 0, 0);
+	vkCmdDrawIndexed(getCommandBufferForCurrentFrame(), getRender()->getIndexBuffer()->getBufferSize(), 1, 0, 0, 0);
 
-	vkCmdEndRenderPass(commandBuffers[currentFrame]);
+	vkCmdEndRenderPass(getCommandBufferForCurrentFrame());
 
-	VkResult commandBufferEndResult = vkEndCommandBuffer(commandBuffers[currentFrame]);
+	VkResult commandBufferEndResult = vkEndCommandBuffer(getCommandBufferForCurrentFrame());
 	if (commandBufferEndResult != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to end recording command buffer!");
 	}
+}
+
+const VkCommandBuffer& CommandManager::getCommandBufferForCurrentFrame() const
+{
+	return commandBuffers[getRender()->getCurrentFrame()];
 }

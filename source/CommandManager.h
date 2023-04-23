@@ -25,14 +25,16 @@ public:
 	CommandManager(Render* render, Device* device, const ApplicationSettings* settings);
 	virtual ~CommandManager();
 
-	void recordCommandBuffer(uint32_t currentFrame, uint32_t imageIndex);
+	void recordCommandBuffer(uint32_t imageIndex);
 
-	VkCommandPool commandPool;
-	std::vector<VkCommandBuffer> commandBuffers;
+	const VkCommandBuffer& getCommandBufferForCurrentFrame() const;
 
 private:
 
 	void createCommandPool();
 	void createCommandBuffers();
+
+	VkCommandPool commandPool;
+	std::vector<VkCommandBuffer> commandBuffers;
 };
 
