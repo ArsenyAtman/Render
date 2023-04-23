@@ -7,7 +7,7 @@
 #include <vulkan/vulkan.h>
 
 class CommandBuffer;
-class SwapChainManager;
+class SwapChain;
 class GraphicsPipeline;
 class SyncsManager;
 class Device;
@@ -28,13 +28,13 @@ public:
 
 	uint32_t getCurrentFrame() const { return currentFrame; }
 
-	SwapChainManager* getSwapChain() const { return swapChainManager; }
+	SwapChain* getSwapChain() const { return swapChain; }
 	GraphicsPipeline* getGraphicsPipeline() const { return graphicsPipeline; }
 	CommandBuffer* getCommandBuffer() const { return commandBuffer; }
 
 private:
 
-	SwapChainManager* swapChainManager = nullptr;
+	SwapChain* swapChain = nullptr;
 	GraphicsPipeline* graphicsPipeline = nullptr;
 	CommandBuffer* commandBuffer = nullptr;
 	SyncsManager* syncsManager = nullptr;

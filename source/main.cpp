@@ -5,7 +5,6 @@
 #include "Application.h"
 
 /**
- * TOOO: move swap chain related things from CommandManager to swap chain ???
  * TODO: refactor helpers
  * TODO: make code prettier
  * 

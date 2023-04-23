@@ -4,7 +4,7 @@
 #include <chrono>
 #include <iostream>
 
-#include "SwapChainManager.h"
+#include "SwapChain.h"
 #include "GraphicsPipeline.h"
 #include "CommandBuffer.h"
 #include "SyncsManager.h"
@@ -26,7 +26,7 @@ Render::Render(Device* device, Window* window, Model* model, const ApplicationSe
 	this->settings = settings;
 
 	commandBuffer = new CommandBuffer(this, device, settings, model);
-	swapChainManager = new SwapChainManager(this, device, settings, window);
+	swapChain = new SwapChain(this, device, settings, window);
 	graphicsPipeline = new GraphicsPipeline(this, device, settings, model);
 	syncsManager = new SyncsManager(this, device, settings);
 }
@@ -37,7 +37,7 @@ Render::~Render()
 
 	delete syncsManager;
 	delete graphicsPipeline;
-	delete swapChainManager;
+	delete swapChain;
 	delete commandBuffer;
 }
 
@@ -56,7 +56,7 @@ void Render::drawFrame()
 	vkResetFences(device->getLogicalDevice(), 1, &syncsManager->getInFlightFenceForCurrentFrame());
 
 	uint32_t imageIndex;
-	vkAcquireNextImageKHR(device->getLogicalDevice(), swapChainManager->swapChain, UINT64_MAX, syncsManager->getImageAvailableSemaphoreForCurrentFrame(), VK_NULL_HANDLE, &imageIndex);
+	vkAcquireNextImageKHR(device->getLogicalDevice(), swapChain->getSwapChain(), UINT64_MAX, syncsManager->getImageAvailableSemaphoreForCurrentFrame(), VK_NULL_HANDLE, &imageIndex);
 
 	commandBuffer->recordCommandBuffer(imageIndex);
 
@@ -85,7 +85,7 @@ void Render::drawFrame()
 	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 	presentInfo.waitSemaphoreCount = 1;
 	presentInfo.pWaitSemaphores = signalSemaphores;
-	VkSwapchainKHR swapChains[] = { swapChainManager->swapChain };
+	VkSwapchainKHR swapChains[] = { swapChain->getSwapChain()};
 	presentInfo.swapchainCount = 1;
 	presentInfo.pSwapchains = swapChains;
 	presentInfo.pImageIndices = &imageIndex;

@@ -10,6 +10,7 @@
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "GraphicsPipeline.h"
+#include "SwapChain.h"
 
 CommandBuffer::CommandBuffer(Render* render, Device* device, const ApplicationSettings* settings, const Model* model) : RenderModule(render, device, settings)
 {
@@ -75,35 +76,15 @@ void CommandBuffer::recordCommandBuffer(uint32_t imageIndex)
 		throw std::runtime_error("Failed to start recording command buffer!");
 	}
 
-	VkRenderPassBeginInfo renderPassInfo{};
-	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassInfo.renderPass = getRender()->getSwapChain()->renderPass;
-	renderPassInfo.framebuffer = getRender()->getSwapChain()->swapChainFramebuffers[imageIndex];
-	renderPassInfo.renderArea.offset = { 0, 0 };
-	renderPassInfo.renderArea.extent = getRender()->getSwapChain()->swapChainExtent;
-
-	std::array<VkClearValue, 2> clearValues{};
-	clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
-	clearValues[1].depthStencil = { 1.0f, 0 };
-	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-	renderPassInfo.pClearValues = clearValues.data();
-
+	VkRenderPassBeginInfo renderPassInfo = getRender()->getSwapChain()->getRenderPassInfo(imageIndex);
 	vkCmdBeginRenderPass(getCommandBufferForCurrentFrame(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 	getRender()->getGraphicsPipeline()->bindToCommandBuffer(getCommandBufferForCurrentFrame());
 
-	VkViewport viewport{};
-	viewport.x = 0.0f;
-	viewport.y = 0.0f;
-	viewport.width = static_cast<float>(getRender()->getSwapChain()->swapChainExtent.width);
-	viewport.height = static_cast<float>(getRender()->getSwapChain()->swapChainExtent.height);
-	viewport.minDepth = 0.0f;
-	viewport.maxDepth = 1.0f;
+	VkViewport viewport = getRender()->getSwapChain()->getViewport();
 	vkCmdSetViewport(getCommandBufferForCurrentFrame(), 0, 1, &viewport);
 
-	VkRect2D scissor{};
-	scissor.offset = { 0, 0 };
-	scissor.extent = getRender()->getSwapChain()->swapChainExtent;
+	VkRect2D scissor = getRender()->getSwapChain()->getScissor();
 	vkCmdSetScissor(getCommandBufferForCurrentFrame(), 0, 1, &scissor);
 
 	for (const Buffer* buffer : buffers)

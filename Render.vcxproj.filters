@@ -37,7 +37,7 @@
     <ClCompile Include="source\Render.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="source\SwapChainManager.cpp">
+    <ClCompile Include="source\SwapChain.cpp">
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\SyncsManager.cpp">
@@ -132,7 +132,7 @@
     <ClInclude Include="source\Render.h">
       <Filter>source</Filter>
     </ClInclude>
-    <ClInclude Include="source\SwapChainManager.h">
+    <ClInclude Include="source\SwapChain.h">
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="source\SyncsManager.h">

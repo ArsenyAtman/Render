@@ -1,4 +1,4 @@
-#include "SwapChainManager.h"
+#include "SwapChain.h"
 
 #include <stdexcept>
 #include <algorithm>
@@ -10,23 +10,84 @@
 #include "Window.h"
 #include "Device.h"
 
-SwapChainManager::SwapChainManager(Render* render, Device* device, const ApplicationSettings* settings, Window* window) : RenderModule(render, device, settings)
+SwapChain::SwapChain(Render* render, Device* device, const ApplicationSettings* settings, Window* window) : RenderModule(render, device, settings)
 {
 	this->window = window;
 
 	createSwapChain();
+
+	depthBuffer = new DepthBuffer(getRender(), getDevice(), getSettings(), swapChainExtent);
+
 	createImageViews();
 	createRenderPass();
 	createFramebuffer();
+
+	renderPassClearVaules = std::vector<VkClearValue>(2);
+	renderPassClearVaules[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
+	renderPassClearVaules[1].depthStencil = { 1.0f, 0 };
 }
 
-void SwapChainManager::createSwapChain()
+SwapChain::~SwapChain()
+{
+	delete depthBuffer;
+
+	for (auto framebuffer : swapChainFramebuffers)
+	{
+		vkDestroyFramebuffer(getDevice()->getLogicalDevice(), framebuffer, nullptr);
+	}
+
+	vkDestroyRenderPass(getDevice()->getLogicalDevice(), renderPass, nullptr);
+
+	vkDestroySwapchainKHR(getDevice()->getLogicalDevice(), swapChain, nullptr);
+
+	for (VkImageView& imageView : swapChainImageViews)
+	{
+		vkDestroyImageView(getDevice()->getLogicalDevice(), imageView, nullptr);
+	}
+}
+
+VkRenderPassBeginInfo SwapChain::getRenderPassInfo(uint32_t imageIndex) const
+{
+	VkRenderPassBeginInfo renderPassInfo = VkRenderPassBeginInfo();
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassInfo.renderPass = renderPass;
+	renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex];
+	renderPassInfo.renderArea.offset = { 0, 0 };
+	renderPassInfo.renderArea.extent = swapChainExtent;
+	renderPassInfo.clearValueCount = static_cast<uint32_t>(renderPassClearVaules.size());
+	renderPassInfo.pClearValues = renderPassClearVaules.data();
+
+	return renderPassInfo;
+}
+
+VkViewport SwapChain::getViewport() const
+{
+	VkViewport viewport = VkViewport();
+	viewport.x = 0.0f;
+	viewport.y = 0.0f;
+	viewport.width = static_cast<float>(swapChainExtent.width);
+	viewport.height = static_cast<float>(swapChainExtent.height);
+	viewport.minDepth = 0.0f;
+	viewport.maxDepth = 1.0f;
+
+	return viewport;
+}
+
+VkRect2D SwapChain::getScissor() const
+{
+	VkRect2D scissor = VkRect2D();
+	scissor.offset = { 0, 0 };
+	scissor.extent = swapChainExtent;
+
+	return scissor;
+}
+
+void SwapChain::createSwapChain()
 {
 	SwapChainSupportDetails swapChainSupport = querySwapChainSupport(getDevice()->getPhysicalDevice(), window->getSurface());
 	VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
 	VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
 	VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities);
-	depthBuffer = new DepthBuffer(getRender(), getDevice(), getSettings(), extent);
 	uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
 	if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount)
 	{
@@ -73,7 +134,7 @@ void SwapChainManager::createSwapChain()
 	swapChainExtent = extent;
 }
 
-void SwapChainManager::createImageViews()
+void SwapChain::createImageViews()
 {
 	swapChainImageViews.resize(swapChainImages.size());
 	for (size_t i = 0; i < swapChainImages.size(); ++i)
@@ -82,7 +143,7 @@ void SwapChainManager::createImageViews()
 	}
 }
 
-void SwapChainManager::createRenderPass()
+void SwapChain::createRenderPass()
 {
 	VkAttachmentDescription colorAttachment{};
 	colorAttachment.format = swapChainImageFormat;
@@ -143,7 +204,7 @@ void SwapChainManager::createRenderPass()
 	}
 }
 
-void SwapChainManager::createFramebuffer()
+void SwapChain::createFramebuffer()
 {
 	swapChainFramebuffers.resize(swapChainImageViews.size());
 
@@ -172,26 +233,7 @@ void SwapChainManager::createFramebuffer()
 	}
 }
 
-SwapChainManager::~SwapChainManager()
-{
-	delete depthBuffer;
-
-	for (auto framebuffer : swapChainFramebuffers)
-	{
-		vkDestroyFramebuffer(getDevice()->getLogicalDevice(), framebuffer, nullptr);
-	}
-
-	vkDestroyRenderPass(getDevice()->getLogicalDevice(), renderPass, nullptr);
-
-	vkDestroySwapchainKHR(getDevice()->getLogicalDevice(), swapChain, nullptr);
-
-	for (VkImageView& imageView : swapChainImageViews)
-	{
-		vkDestroyImageView(getDevice()->getLogicalDevice(), imageView, nullptr);
-	}
-}
-
-SwapChainSupportDetails SwapChainManager::querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface)
+SwapChainSupportDetails SwapChain::querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface)
 {
 	SwapChainSupportDetails details;
 
@@ -218,7 +260,7 @@ SwapChainSupportDetails SwapChainManager::querySwapChainSupport(VkPhysicalDevice
 	return details;
 }
 
-VkSurfaceFormatKHR SwapChainManager::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
+VkSurfaceFormatKHR SwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
 {
 	for (const VkSurfaceFormatKHR& availableFormat : availableFormats)
 	{
@@ -231,7 +273,7 @@ VkSurfaceFormatKHR SwapChainManager::chooseSwapSurfaceFormat(const std::vector<V
 	return availableFormats[0];
 }
 
-VkPresentModeKHR SwapChainManager::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes)
+VkPresentModeKHR SwapChain::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes)
 {
 	for (const auto& availablePresentMode : availablePresentModes)
 	{
@@ -244,7 +286,7 @@ VkPresentModeKHR SwapChainManager::chooseSwapPresentMode(const std::vector<VkPre
 	return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-VkExtent2D SwapChainManager::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
+VkExtent2D SwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
 {
 	if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
 	{

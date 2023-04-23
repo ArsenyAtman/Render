@@ -12,7 +12,7 @@
 #include "Device.h"
 #include "Settings.h"
 
-#include "SwapChainManager.h"
+#include "SwapChain.h"
 
 UniformBuffer::UniformBuffer(Render* render, Device* device, const ApplicationSettings* settings) : Descriptor(render, device, settings)
 {
@@ -49,7 +49,7 @@ void UniformBuffer::tick()
 
 	glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(getSettings()->rotation[0]), forward) * glm::rotate(glm::mat4(1.0f), glm::radians(getSettings()->rotation[1]), right) * glm::rotate(glm::mat4(1.0f), glm::radians(getSettings()->rotation[2]), up);
 
-	const VkExtent2D& extent = getRender()->getSwapChain()->swapChainExtent;
+	const VkExtent2D& extent = getRender()->getSwapChain()->getSwapChainExtent();
 
 	UniformBufferObject ubo{};
 	ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(getSettings()->rotationSpeed), up) * rotation;

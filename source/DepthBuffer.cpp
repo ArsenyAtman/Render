@@ -3,7 +3,7 @@
 #include "Render.h"
 #include "Device.h"
 #include "Settings.h"
-#include "SwapChainManager.h"
+#include "SwapChain.h"
 #include "Helpers.h"
 
 DepthBuffer::DepthBuffer(Render* render, Device* device, const ApplicationSettings* settings, VkExtent2D swapChainExtent) : RenderModule(render, device, settings)

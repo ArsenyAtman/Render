@@ -6,7 +6,7 @@
 #include "Vertex.h"
 #include "Shader.h"
 #include "DescriptorsManager.h"
-#include "SwapChainManager.h"
+#include "SwapChain.h"
 #include "Render.h"
 #include "Device.h"
 #include "Settings.h"
@@ -140,7 +140,7 @@ void GraphicsPipeline::createGraphicsPipeline(const std::vector<Shader*>& shader
 	pipelineInfo.pColorBlendState = &colorBlending;
 	pipelineInfo.pDynamicState = &dynamicState;
 	pipelineInfo.layout = pipelineLayout;
-	pipelineInfo.renderPass = getRender()->getSwapChain()->renderPass;
+	pipelineInfo.renderPass = getRender()->getSwapChain()->getRenderPass();
 	pipelineInfo.subpass = 0;
 	pipelineInfo.pDepthStencilState = &depthStencil;
 

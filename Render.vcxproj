@@ -165,7 +165,7 @@
     <ClCompile Include="source\Shader.cpp" />
     <ClCompile Include="source\ShaderCompiler.cpp" />
     <ClCompile Include="source\Surface.cpp" />
-    <ClCompile Include="source\SwapChainManager.cpp" />
+    <ClCompile Include="source\SwapChain.cpp" />
     <ClCompile Include="source\SyncsManager.cpp" />
     <ClCompile Include="source\SystemWindow.cpp" />
     <ClCompile Include="source\Texture.cpp" />
@@ -198,7 +198,7 @@
     <ClInclude Include="source\Shader.h" />
     <ClInclude Include="source\ShaderCompiler.h" />
     <ClInclude Include="source\Surface.h" />
-    <ClInclude Include="source\SwapChainManager.h" />
+    <ClInclude Include="source\SwapChain.h" />
     <ClInclude Include="source\SyncsManager.h" />
     <ClInclude Include="source\SystemWindow.h" />
     <ClInclude Include="source\Texture.h" />

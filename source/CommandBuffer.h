@@ -6,8 +6,6 @@
 
 #include <vulkan/vulkan.h>
 
-#include "SwapChainManager.h"
-
 class Model;
 class Buffer;
 
