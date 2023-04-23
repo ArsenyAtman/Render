@@ -49,17 +49,17 @@ SyncsManager::~SyncsManager()
 	}
 }
 
-VkSemaphore SyncsManager::getImageAvailableSemaphoreForCurrentFrame() const
+const VkSemaphore& SyncsManager::getImageAvailableSemaphoreForCurrentFrame() const
 {
 	return imageAvailableSemaphores[getRender()->getCurrentFrame()];
 }
 
-VkSemaphore SyncsManager::getRenderFinishedSemaphoreForCurrentFrame() const
+const VkSemaphore& SyncsManager::getRenderFinishedSemaphoreForCurrentFrame() const
 {
 	return renderFinishedSemaphores[getRender()->getCurrentFrame()];
 }
 
-VkFence SyncsManager::getInFlightFenceForCurrentFrame() const
+const VkFence& SyncsManager::getInFlightFenceForCurrentFrame() const
 {
 	return inFlightFences[getRender()->getCurrentFrame()];
 }

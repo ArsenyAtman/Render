@@ -14,9 +14,9 @@ public:
 	SyncsManager(Render* render, Device* device, const ApplicationSettings* settings);
 	virtual ~SyncsManager();
 
-	VkSemaphore getImageAvailableSemaphoreForCurrentFrame() const;
-	VkSemaphore getRenderFinishedSemaphoreForCurrentFrame() const;
-	VkFence getInFlightFenceForCurrentFrame() const;
+	const VkSemaphore& getImageAvailableSemaphoreForCurrentFrame() const;
+	const VkSemaphore& getRenderFinishedSemaphoreForCurrentFrame() const;
+	const VkFence& getInFlightFenceForCurrentFrame() const;
 
 private:
 
