@@ -58,7 +58,7 @@
     <ClCompile Include="source\Helpers.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="source\TextureImage.cpp">
+    <ClCompile Include="source\TextureBuffer.cpp">
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\DescriptorsManager.cpp">
@@ -118,6 +118,12 @@
     <ClCompile Include="source\CommandBufferBindable.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\Descriptor.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Tickable.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CommandManager.h">
@@ -147,7 +153,7 @@
     <ClInclude Include="source\Helpers.h">
       <Filter>source</Filter>
     </ClInclude>
-    <ClInclude Include="source\TextureImage.h">
+    <ClInclude Include="source\TextureBuffer.h">
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="source\DescriptorsManager.h">
@@ -205,6 +211,12 @@
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="source\CommandBufferBindable.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Descriptor.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Tickable.h">
       <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>

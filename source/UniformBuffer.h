@@ -1,12 +1,11 @@
 #pragma once
 
+#include "Descriptor.h"
+
 #include <vector>
 
 #include <glm/glm.hpp>
-
 #include <vulkan/vulkan.h>
-
-struct ApplicationSettings;
 
 struct UniformBufferObject
 {
@@ -15,24 +14,24 @@ struct UniformBufferObject
     glm::mat4 proj;
 };
 
-class UniformBuffer
+class UniformBuffer : public Descriptor
 {
-
 public:
 
-    UniformBuffer(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, const ApplicationSettings* settings);
+    UniformBuffer(Render* render, Device* device, const ApplicationSettings* settings);
     virtual ~UniformBuffer();
 
-    void update(uint32_t currentFrame, VkExtent2D extent);
+    virtual void tick() override;
 
-    std::vector<VkBuffer> uniformBuffers;
-    std::vector<VkDeviceMemory> uniformBuffersMemory;
-    std::vector<void*> uniformBuffersMapped;
-
-    VkDescriptorSetLayoutBinding uboLayoutBinding;
+    virtual VkDescriptorSetLayoutBinding getLayoutBinding() const override;
+    virtual VkDescriptorPoolSize getPoolSize() const override;
+    virtual VkWriteDescriptorSet getWriteSet(VkDescriptorSet descriptorSet) const override;
 
 private:
 
-    VkDevice logicalDevice;
-    const ApplicationSettings* settings;
+    VkBuffer uniformBuffer;
+    VkDeviceMemory uniformBufferMemory;
+    void* uniformBufferMapped;
+
+    VkDescriptorBufferInfo bufferInfo;
 };

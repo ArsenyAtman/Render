@@ -135,6 +135,43 @@ VkImageView Helpers::createImageView(VkDevice logicalDevice, VkImage image, VkFo
     return imageView;
 }
 
+void Helpers::copyBufferToImage(Device* device, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
+{
+    VkCommandPool commandPool;
+
+    VkCommandPoolCreateInfo poolInfo{};
+    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    poolInfo.queueFamilyIndex = device->getQueueIndices().graphicsFamily.value();
+
+    VkResult result = vkCreateCommandPool(device->getLogicalDevice(), &poolInfo, nullptr, &commandPool);
+    if (result != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create command pool!");
+    }
+
+    VkCommandBuffer commandBuffer = Helpers::beginSingleTimeCommands(device->getLogicalDevice(), commandPool);
+
+    VkBufferImageCopy region{};
+    region.bufferOffset = 0;
+    region.bufferRowLength = 0;
+    region.bufferImageHeight = 0;
+
+    region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    region.imageSubresource.mipLevel = 0;
+    region.imageSubresource.baseArrayLayer = 0;
+    region.imageSubresource.layerCount = 1;
+
+    region.imageOffset = { 0, 0, 0 };
+    region.imageExtent = { width, height, 1 };
+
+    vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+
+    Helpers::endSingleTimeCommands(device->getLogicalDevice(), commandBuffer, device->getGraphicsQueue(), commandPool);
+
+    vkDestroyCommandPool(device->getLogicalDevice(), commandPool, nullptr);
+}
+
 VkCommandBuffer Helpers::beginSingleTimeCommands(VkDevice logicalDevice, VkCommandPool commandPool)
 {
     VkCommandBufferAllocateInfo allocInfo{};
@@ -171,9 +208,22 @@ void Helpers::endSingleTimeCommands(VkDevice logicalDevice, VkCommandBuffer comm
 }
 
 
-void Helpers::transitionImageLayout(VkDevice logicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
+void Helpers::transitionImageLayout(Device* device, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
 {
-    VkCommandBuffer commandBuffer = Helpers::beginSingleTimeCommands(logicalDevice, commandPool);
+    VkCommandPool commandPool;
+
+    VkCommandPoolCreateInfo poolInfo{};
+    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    poolInfo.queueFamilyIndex = device->getQueueIndices().graphicsFamily.value();
+
+    VkResult result = vkCreateCommandPool(device->getLogicalDevice(), &poolInfo, nullptr, &commandPool);
+    if (result != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create command pool!");
+    }
+
+    VkCommandBuffer commandBuffer = Helpers::beginSingleTimeCommands(device->getLogicalDevice(), commandPool);
 
     VkImageMemoryBarrier barrier{};
     barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -234,7 +284,9 @@ void Helpers::transitionImageLayout(VkDevice logicalDevice, VkQueue graphicsQueu
 
     vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
-    Helpers::endSingleTimeCommands(logicalDevice, commandBuffer, graphicsQueue, commandPool);
+    Helpers::endSingleTimeCommands(device->getLogicalDevice(), commandBuffer, device->getGraphicsQueue(), commandPool);
+
+    vkDestroyCommandPool(device->getLogicalDevice(), commandPool, nullptr);
 }
 
 

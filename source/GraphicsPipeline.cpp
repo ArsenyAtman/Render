@@ -10,22 +10,32 @@
 #include "Render.h"
 #include "Device.h"
 #include "Settings.h"
+#include "Model.h"
 
-GraphicsPipeline::GraphicsPipeline(Render* render, Device* device, const ApplicationSettings* settings, const std::vector<Shader*>& shaders) : RenderModule(render, device, settings)
+GraphicsPipeline::GraphicsPipeline(Render* render, Device* device, const ApplicationSettings* settings, const Model* model) : RenderModule(render, device, settings)
 {
-	createGraphicsPipeline(shaders);
+	descriptorsManager = new DescriptorsManager(render, device, settings, model);
+
+	createGraphicsPipeline(model->getShaders());
 }
 
 GraphicsPipeline::~GraphicsPipeline()
 {
 	vkDestroyPipeline(getDevice()->getLogicalDevice(), graphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(getDevice()->getLogicalDevice(), pipelineLayout, nullptr);
+
+	delete descriptorsManager;
 }
 
 void GraphicsPipeline::bindToCommandBuffer(VkCommandBuffer commandBuffer) const
 {
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, getRender()->getDescriptorsManager()->getDescriptorSetForCurrentFrame(), 0, nullptr);
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorsManager->getDescriptorSetForCurrentFrame(), 0, nullptr);
+}
+
+void GraphicsPipeline::tick()
+{
+	descriptorsManager->tick();
 }
 
 void GraphicsPipeline::createGraphicsPipeline(const std::vector<Shader*>& shaders)
@@ -109,7 +119,7 @@ void GraphicsPipeline::createGraphicsPipeline(const std::vector<Shader*>& shader
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	pipelineLayoutInfo.setLayoutCount = 1;
-	pipelineLayoutInfo.pSetLayouts = getRender()->getDescriptorsManager()->getDescriptorSetLayout();
+	pipelineLayoutInfo.pSetLayouts = &descriptorsManager->getDescriptorSetLayout();
 	pipelineLayoutInfo.pushConstantRangeCount = 0;
 
 	VkResult layoutCreationResult = vkCreatePipelineLayout(getDevice()->getLogicalDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout);

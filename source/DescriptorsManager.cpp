@@ -6,11 +6,22 @@
 #include "Render.h"
 #include "Device.h"
 #include "Settings.h"
+#include "Model.h"
 #include "UniformBuffer.h"
-#include "TextureImage.h"
+#include "TextureBuffer.h"
 
-DescriptorsManager::DescriptorsManager(Render* render, Device* device, const ApplicationSettings* settings) : RenderModule(render, device, settings)
+DescriptorsManager::DescriptorsManager(Render* render, Device* device, const ApplicationSettings* settings, const Model* model) : RenderModule(render, device, settings)
 {
+	for (uint32_t i = 0; i < settings->maxFramesInFlight; ++i)
+	{
+		TextureBuffer* textureBuffer = new TextureBuffer(render, device, settings, model->getTexture());
+		UniformBuffer* uniformBuffer = new UniformBuffer(render, device, settings);
+		
+		std::vector<Descriptor*> descriptorsForFrame = { textureBuffer, uniformBuffer };
+
+		descriptorsForFrames.push_back(descriptorsForFrame);
+	}
+
 	createDescriptorSetLayout();
 	createDescriptorPool();
 	createDescriptorSets();
@@ -20,21 +31,45 @@ DescriptorsManager::~DescriptorsManager()
 {
 	vkDestroyDescriptorPool(getDevice()->getLogicalDevice(), descriptorPool, nullptr);
 	vkDestroyDescriptorSetLayout(getDevice()->getLogicalDevice(), descriptorSetLayout, nullptr);
+
+	for (std::vector<Descriptor*> descriptorsForFrame : descriptorsForFrames)
+	{
+		for (Descriptor* descriptor : descriptorsForFrame)
+		{
+			delete descriptor;
+		}
+	}
 }
 
-const VkDescriptorSetLayout* DescriptorsManager::getDescriptorSetLayout() const
+void DescriptorsManager::tick()
 {
-	return &descriptorSetLayout;
+	for (std::vector<Descriptor*> descriptorsForFrame : descriptorsForFrames)
+	{
+		for (Descriptor* descriptor : descriptorsForFrame)
+		{
+			descriptor->tick();
+		}
+	}
 }
 
-const VkDescriptorSet* DescriptorsManager::getDescriptorSetForCurrentFrame() const
+const VkDescriptorSetLayout& DescriptorsManager::getDescriptorSetLayout() const
 {
-	return &descriptorSets[getRender()->getCurrentFrame()];
+	return descriptorSetLayout;
+}
+
+const VkDescriptorSet& DescriptorsManager::getDescriptorSetForCurrentFrame() const
+{
+	return descriptorSets[getRender()->getCurrentFrame()];
 }
 
 void DescriptorsManager::createDescriptorSetLayout()
 {
-	std::array<VkDescriptorSetLayoutBinding, 2> bindings = { getRender()->getUniformBuffer()->uboLayoutBinding, getRender()->getTextureImage()->samplerLayoutBinding};
+	std::vector<VkDescriptorSetLayoutBinding> bindings;
+	for (const Descriptor* descriptor : descriptorsForFrames[0])
+	{
+		bindings.push_back(descriptor->getLayoutBinding());
+	}
+	
 	VkDescriptorSetLayoutCreateInfo layoutInfo{};
 	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 	layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
@@ -49,17 +84,17 @@ void DescriptorsManager::createDescriptorSetLayout()
 
 void DescriptorsManager::createDescriptorPool()
 {
-	std::array<VkDescriptorPoolSize, 2> poolSizes{};
-	poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	poolSizes[0].descriptorCount = static_cast<uint32_t>(getSettings()->maxFramesInFlight);
-	poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	poolSizes[1].descriptorCount = static_cast<uint32_t>(getSettings()->maxFramesInFlight);
+	std::vector<VkDescriptorPoolSize> poolSizes;
+	for (const Descriptor* descriptor : descriptorsForFrames[0])
+	{
+		poolSizes.push_back(descriptor->getPoolSize());
+	}
 
 	VkDescriptorPoolCreateInfo poolInfo{};
 	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 	poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
 	poolInfo.pPoolSizes = poolSizes.data();
-	poolInfo.maxSets = static_cast<uint32_t>(getSettings()->maxFramesInFlight);
+	poolInfo.maxSets = static_cast<uint32_t>(descriptorsForFrames.size());
 
 	VkResult result = vkCreateDescriptorPool(getDevice()->getLogicalDevice(), &poolInfo, nullptr, &descriptorPool);
 	if (result != VK_SUCCESS)
@@ -71,6 +106,7 @@ void DescriptorsManager::createDescriptorPool()
 void DescriptorsManager::createDescriptorSets()
 {
 	std::vector<VkDescriptorSetLayout> layouts(getSettings()->maxFramesInFlight, descriptorSetLayout);
+	
 	VkDescriptorSetAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 	allocInfo.descriptorPool = descriptorPool;
@@ -85,35 +121,15 @@ void DescriptorsManager::createDescriptorSets()
 		throw std::runtime_error("failed to allocate descriptor sets!");
 	}
 
-	for (size_t i = 0; i < getSettings()->maxFramesInFlight; i++)
+	for (size_t i = 0; i < descriptorsForFrames.size(); ++i)
 	{
-		VkDescriptorBufferInfo bufferInfo{};
-		bufferInfo.buffer = getRender()->getUniformBuffer()->uniformBuffers[i];
-		bufferInfo.offset = 0;
-		bufferInfo.range = sizeof(UniformBufferObject);
+		std::vector<Descriptor*>& descriptorsForFrame = descriptorsForFrames[i];
 
-		VkDescriptorImageInfo imageInfo{};
-		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		imageInfo.imageView = getRender()->getTextureImage()->textureImageView;
-		imageInfo.sampler = getRender()->getTextureImage()->textureSampler;
-
-		std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
-
-		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[0].dstSet = descriptorSets[i];
-		descriptorWrites[0].dstBinding = 0;
-		descriptorWrites[0].dstArrayElement = 0;
-		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		descriptorWrites[0].descriptorCount = 1;
-		descriptorWrites[0].pBufferInfo = &bufferInfo;
-
-		descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[1].dstSet = descriptorSets[i];
-		descriptorWrites[1].dstBinding = 1;
-		descriptorWrites[1].dstArrayElement = 0;
-		descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		descriptorWrites[1].descriptorCount = 1;
-		descriptorWrites[1].pImageInfo = &imageInfo;
+		std::vector<VkWriteDescriptorSet> descriptorWrites;
+		for (const Descriptor* descriptor : descriptorsForFrame)
+		{
+			descriptorWrites.push_back(descriptor->getWriteSet(descriptorSets[i]));
+		}
 
 		vkUpdateDescriptorSets(getDevice()->getLogicalDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 	}

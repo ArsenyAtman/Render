@@ -1,16 +1,15 @@
 #pragma once
 
+#include "Tickable.h"
+
 #include <vector>
 
 #include <vulkan/vulkan.h>
 
-class UniformBuffer;
 class SwapChainManager;
 class GraphicsPipeline;
 class CommandManager;
 class SyncsManager;
-class TextureImage;
-class DescriptorsManager;
 
 class Settings;
 class Window;
@@ -20,22 +19,20 @@ class Buffer;
 
 struct ApplicationSettings;
 
-class Render
+class Render : public Tickable
 {
 public:
 
 	Render(Device* device, Window* window, Model* model, const ApplicationSettings* settings);
 	virtual ~Render();
 
-	void tick();
+	virtual void tick() override;
 
 	uint32_t getCurrentFrame() const { return currentFrame; }
 
 	const std::vector<Buffer*>& getBuffers() const { return buffers; }
 	Buffer* getIndexBuffer() const { return indexBuffer; }
-	UniformBuffer* getUniformBuffer() const { return uniformBuffer; }
-	TextureImage* getTextureImage() const { return textureImage; }
-	DescriptorsManager* getDescriptorsManager() const { return descriptorsManager; }
+
 	SwapChainManager* getSwapChain() const { return swapChainManager; }
 	GraphicsPipeline* getGraphicsPipeline() const { return graphicsPipeline; }
 	CommandManager* getCommandBuffer() const { return commandManager; }
@@ -45,9 +42,6 @@ private:
 	std::vector<Buffer*> buffers;
 	Buffer* indexBuffer = nullptr;
 
-	UniformBuffer* uniformBuffer = nullptr;
-	TextureImage* textureImage = nullptr;
-	DescriptorsManager* descriptorsManager = nullptr;
 	SwapChainManager* swapChainManager = nullptr;
 	GraphicsPipeline* graphicsPipeline = nullptr;
 	CommandManager* commandManager = nullptr;

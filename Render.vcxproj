@@ -147,6 +147,7 @@
     <ClCompile Include="source\CommandBufferBindable.cpp" />
     <ClCompile Include="source\CommandManager.cpp" />
     <ClCompile Include="source\DepthBuffer.cpp" />
+    <ClCompile Include="source\Descriptor.cpp" />
     <ClCompile Include="source\DescriptorsManager.cpp" />
     <ClCompile Include="source\Device.cpp" />
     <ClCompile Include="source\GraphicsPipeline.cpp" />
@@ -168,7 +169,8 @@
     <ClCompile Include="source\SyncsManager.cpp" />
     <ClCompile Include="source\SystemWindow.cpp" />
     <ClCompile Include="source\Texture.cpp" />
-    <ClCompile Include="source\TextureImage.cpp" />
+    <ClCompile Include="source\TextureBuffer.cpp" />
+    <ClCompile Include="source\Tickable.cpp" />
     <ClCompile Include="source\UniformBuffer.cpp" />
     <ClCompile Include="source\Vertex.cpp" />
     <ClCompile Include="source\VertexBuffer.cpp" />
@@ -179,6 +181,7 @@
     <ClInclude Include="source\CommandBufferBindable.h" />
     <ClInclude Include="source\CommandManager.h" />
     <ClInclude Include="source\DepthBuffer.h" />
+    <ClInclude Include="source\Descriptor.h" />
     <ClInclude Include="source\DescriptorsManager.h" />
     <ClInclude Include="source\Device.h" />
     <ClInclude Include="source\GraphicsPipeline.h" />
@@ -199,7 +202,8 @@
     <ClInclude Include="source\SyncsManager.h" />
     <ClInclude Include="source\SystemWindow.h" />
     <ClInclude Include="source\Texture.h" />
-    <ClInclude Include="source\TextureImage.h" />
+    <ClInclude Include="source\TextureBuffer.h" />
+    <ClInclude Include="source\Tickable.h" />
     <ClInclude Include="source\UniformBuffer.h" />
     <ClInclude Include="source\Vertex.h" />
     <ClInclude Include="source\VertexBuffer.h" />

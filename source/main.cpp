@@ -11,6 +11,8 @@
  * TODOOP: make DescriptorsManager part of GraphicsPipeline
  * TOOO: move swap chain related things from CommandManager to swap chain ???
  * TODO: rename CommandManager to command buffer
+ * TODO: tickable interface
+ * TODO: refactor helpers
  * 
  * TODO: Handle VK_ERROR_INCOMPATIBLE_DRIVER.
  * TODO: Check extension support.

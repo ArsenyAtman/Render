@@ -1,26 +1,34 @@
 #pragma once
 
 #include "RenderModule.h"
+#include "Tickable.h"
 
 #include <vector>
 
 #include <vulkan/vulkan.h>
 
-class DescriptorsManager : public RenderModule
+class Model;
+class Descriptor;
+
+class DescriptorsManager : public RenderModule, public Tickable
 {
 public:
 
-	DescriptorsManager(Render* render, Device* device, const ApplicationSettings* settings);
+	DescriptorsManager(Render* render, Device* device, const ApplicationSettings* settings, const Model* model);
 	virtual ~DescriptorsManager();
 
-	const VkDescriptorSetLayout* getDescriptorSetLayout() const;
-	const VkDescriptorSet* getDescriptorSetForCurrentFrame() const;
+	virtual void tick() override;
+
+	const VkDescriptorSetLayout& getDescriptorSetLayout() const;
+	const VkDescriptorSet& getDescriptorSetForCurrentFrame() const;
 
 private:
 
 	void createDescriptorSetLayout();
 	void createDescriptorPool();
 	void createDescriptorSets();
+
+	std::vector<std::vector<Descriptor*>> descriptorsForFrames;
 
 	VkDescriptorSetLayout descriptorSetLayout;
 	VkDescriptorPool descriptorPool;

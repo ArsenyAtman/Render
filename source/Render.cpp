@@ -6,11 +6,8 @@
 
 #include "SwapChainManager.h"
 #include "GraphicsPipeline.h"
-#include "UniformBuffer.h"
 #include "CommandManager.h"
 #include "SyncsManager.h"
-#include "TextureImage.h"
-#include "DescriptorsManager.h"
 #include "ModelLoader.h"
 
 #include "Vertex.h"
@@ -33,12 +30,11 @@ Render::Render(Device* device, Window* window, Model* model, const ApplicationSe
 	indexBuffer = new IndexBuffer(this, device, settings, model->getMesh());
 	buffers.push_back(indexBuffer);
 
-	uniformBuffer = new UniformBuffer(device->getLogicalDevice(), device->getPhysicalDevice(), settings);
-	textureImage = new TextureImage(device->getLogicalDevice(), device->getPhysicalDevice(), device->getGraphicsQueue(), commandManager->commandPool, model->getTexture());
-	descriptorsManager = new DescriptorsManager(this, device, settings);
-	swapChainManager = new SwapChainManager(device->getLogicalDevice(), device->getPhysicalDevice(), device->getGraphicsQueue(), commandManager->commandPool, device->getQueueIndices(), window->getSurface(), window);
-	graphicsPipeline = new GraphicsPipeline(this, device, settings, model->getShaders());
-	syncsManager = new SyncsManager(device->getLogicalDevice(), settings);
+	swapChainManager = new SwapChainManager(this, device, settings, window);
+	
+	graphicsPipeline = new GraphicsPipeline(this, device, settings, model);
+
+	syncsManager = new SyncsManager(this, device, settings);
 }
 
 Render::~Render()
@@ -48,9 +44,6 @@ Render::~Render()
 	delete syncsManager;
 	delete graphicsPipeline;
 	delete swapChainManager;
-	delete descriptorsManager;
-	delete textureImage;
-	delete uniformBuffer;
 	for (Buffer* buffer : buffers)
 	{
 		delete buffer;
@@ -60,37 +53,39 @@ Render::~Render()
 
 void Render::tick()
 {
+	graphicsPipeline->tick();
+
 	drawFrame();
+
+	currentFrame = (currentFrame + 1) % settings->maxFramesInFlight;
 }
 
 void Render::drawFrame()
 {
-	vkWaitForFences(device->getLogicalDevice(), 1, &syncsManager->inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
-	vkResetFences(device->getLogicalDevice(), 1, &syncsManager->inFlightFences[currentFrame]);
+	vkWaitForFences(device->getLogicalDevice(), 1, &syncsManager->getInFlightFenceForCurrentFrame(), VK_TRUE, UINT64_MAX);
+	vkResetFences(device->getLogicalDevice(), 1, &syncsManager->getInFlightFenceForCurrentFrame());
 
 	uint32_t imageIndex;
-	vkAcquireNextImageKHR(device->getLogicalDevice(), swapChainManager->swapChain, UINT64_MAX, syncsManager->imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
+	vkAcquireNextImageKHR(device->getLogicalDevice(), swapChainManager->swapChain, UINT64_MAX, syncsManager->getImageAvailableSemaphoreForCurrentFrame(), VK_NULL_HANDLE, &imageIndex);
 
-	uniformBuffer->update(currentFrame, swapChainManager->swapChainExtent);
-
-	commandManager->recordCommandBuffer(currentFrame, imageIndex);
+	commandManager->recordCommandBuffer(imageIndex);
 
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-	VkSemaphore waitSemaphores[] = { syncsManager->imageAvailableSemaphores[currentFrame]};
+	VkSemaphore waitSemaphores[] = { syncsManager->getImageAvailableSemaphoreForCurrentFrame()};
 	VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 	submitInfo.waitSemaphoreCount = 1;
 	submitInfo.pWaitSemaphores = waitSemaphores;
 	submitInfo.pWaitDstStageMask = waitStages;
 	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &commandManager->commandBuffers[currentFrame];
+	submitInfo.pCommandBuffers = &commandManager->getCommandBufferForCurrentFrame();
 
-	VkSemaphore signalSemaphores[] = { syncsManager->renderFinishedSemaphores[currentFrame]};
+	VkSemaphore signalSemaphores[] = { syncsManager->getRenderFinishedSemaphoreForCurrentFrame()};
 	submitInfo.signalSemaphoreCount = 1;
 	submitInfo.pSignalSemaphores = signalSemaphores;
 
-	VkResult result = vkQueueSubmit(device->getGraphicsQueue(), 1, &submitInfo, syncsManager->inFlightFences[currentFrame]);
+	VkResult result = vkQueueSubmit(device->getGraphicsQueue(), 1, &submitInfo, syncsManager->getInFlightFenceForCurrentFrame());
 	if (result != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to submit draw command buffer!");
@@ -106,6 +101,4 @@ void Render::drawFrame()
 	presentInfo.pImageIndices = &imageIndex;
 
 	vkQueuePresentKHR(device->getPresentQueue(), &presentInfo);
-
-	currentFrame = (currentFrame + 1) % settings->maxFramesInFlight;
 }
