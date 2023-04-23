@@ -28,7 +28,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\CommandManager.cpp">
+    <ClCompile Include="source\CommandBuffer.cpp">
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\main.cpp">
@@ -126,7 +126,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\CommandManager.h">
+    <ClInclude Include="source\CommandBuffer.h">
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="source\Render.h">

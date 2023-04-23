@@ -1,29 +1,37 @@
-#include "CommandManager.h"
+#include "CommandBuffer.h"
 
 #include <stdexcept>
 #include <array>
 
-#include "GraphicsPipeline.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
-#include "DescriptorsManager.h"
-
 #include "Render.h"
 #include "Device.h"
 #include "Settings.h"
+#include "Model.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
+#include "GraphicsPipeline.h"
 
-CommandManager::CommandManager(Render* render, Device* device, const ApplicationSettings* settings) : RenderModule(render, device, settings)
+CommandBuffer::CommandBuffer(Render* render, Device* device, const ApplicationSettings* settings, const Model* model) : RenderModule(render, device, settings)
 {
 	createCommandPool();
 	createCommandBuffers();
+
+	buffers.push_back(new VertexBuffer(render, device, settings, model->getMesh()));
+	indexBuffer = new IndexBuffer(render, device, settings, model->getMesh());
+	buffers.push_back(indexBuffer);
 }
 
-CommandManager::~CommandManager()
+CommandBuffer::~CommandBuffer()
 {
+	for (Buffer* buffer : buffers)
+	{
+		delete buffer;
+	}
+
 	vkDestroyCommandPool(getDevice()->getLogicalDevice(), commandPool, nullptr);
 }
 
-void CommandManager::createCommandPool()
+void CommandBuffer::createCommandPool()
 {
 	VkCommandPoolCreateInfo poolInfo{};
 	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -37,7 +45,7 @@ void CommandManager::createCommandPool()
 	}
 }
 
-void CommandManager::createCommandBuffers()
+void CommandBuffer::createCommandBuffers()
 {
 	commandBuffers.resize(getSettings()->maxFramesInFlight);
 
@@ -54,7 +62,7 @@ void CommandManager::createCommandBuffers()
 	}
 }
 
-void CommandManager::recordCommandBuffer(uint32_t imageIndex)
+void CommandBuffer::recordCommandBuffer(uint32_t imageIndex)
 {
 	vkResetCommandBuffer(getCommandBufferForCurrentFrame(), 0);
 
@@ -98,12 +106,12 @@ void CommandManager::recordCommandBuffer(uint32_t imageIndex)
 	scissor.extent = getRender()->getSwapChain()->swapChainExtent;
 	vkCmdSetScissor(getCommandBufferForCurrentFrame(), 0, 1, &scissor);
 
-	for (const Buffer* buffer : getRender()->getBuffers())
+	for (const Buffer* buffer : buffers)
 	{
 		buffer->bindToCommandBuffer(getCommandBufferForCurrentFrame());
 	}
 
-	vkCmdDrawIndexed(getCommandBufferForCurrentFrame(), getRender()->getIndexBuffer()->getBufferSize(), 1, 0, 0, 0);
+	vkCmdDrawIndexed(getCommandBufferForCurrentFrame(), indexBuffer->getBufferSize(), 1, 0, 0, 0);
 
 	vkCmdEndRenderPass(getCommandBufferForCurrentFrame());
 
@@ -114,7 +122,7 @@ void CommandManager::recordCommandBuffer(uint32_t imageIndex)
 	}
 }
 
-const VkCommandBuffer& CommandManager::getCommandBufferForCurrentFrame() const
+const VkCommandBuffer& CommandBuffer::getCommandBufferForCurrentFrame() const
 {
 	return commandBuffers[getRender()->getCurrentFrame()];
 }

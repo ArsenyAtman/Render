@@ -8,26 +8,23 @@
 
 #include "SwapChainManager.h"
 
-class Device;
-class SwapChainManager;
-class GraphicsPipeline;
-class VertexBuffer;
-class IndexBuffer;
-class DescriptorsManager;
+class Model;
+class Buffer;
 
-struct ApplicationSettings;
-
-class CommandManager : public RenderModule
+class CommandBuffer : public RenderModule
 {
 
 public:
 
-	CommandManager(Render* render, Device* device, const ApplicationSettings* settings);
-	virtual ~CommandManager();
+	CommandBuffer(Render* render, Device* device, const ApplicationSettings* settings, const Model* model);
+	virtual ~CommandBuffer();
 
 	void recordCommandBuffer(uint32_t imageIndex);
 
 	const VkCommandBuffer& getCommandBufferForCurrentFrame() const;
+
+	const std::vector<Buffer*>& getBuffers() const { return buffers; }
+	Buffer* getIndexBuffer() const { return indexBuffer; }
 
 private:
 
@@ -36,5 +33,8 @@ private:
 
 	VkCommandPool commandPool;
 	std::vector<VkCommandBuffer> commandBuffers;
+
+	std::vector<Buffer*> buffers;
+	Buffer* indexBuffer = nullptr;
 };
 

@@ -6,7 +6,7 @@
 
 #include "SwapChainManager.h"
 #include "GraphicsPipeline.h"
-#include "CommandManager.h"
+#include "CommandBuffer.h"
 #include "SyncsManager.h"
 #include "ModelLoader.h"
 
@@ -25,15 +25,9 @@ Render::Render(Device* device, Window* window, Model* model, const ApplicationSe
 	this->device = device;
 	this->settings = settings;
 
-	commandManager = new CommandManager(this, device, settings);
-	buffers.push_back(new VertexBuffer(this, device, settings, model->getMesh()));
-	indexBuffer = new IndexBuffer(this, device, settings, model->getMesh());
-	buffers.push_back(indexBuffer);
-
+	commandBuffer = new CommandBuffer(this, device, settings, model);
 	swapChainManager = new SwapChainManager(this, device, settings, window);
-	
 	graphicsPipeline = new GraphicsPipeline(this, device, settings, model);
-
 	syncsManager = new SyncsManager(this, device, settings);
 }
 
@@ -44,11 +38,7 @@ Render::~Render()
 	delete syncsManager;
 	delete graphicsPipeline;
 	delete swapChainManager;
-	for (Buffer* buffer : buffers)
-	{
-		delete buffer;
-	}
-	delete commandManager;
+	delete commandBuffer;
 }
 
 void Render::tick()
@@ -68,7 +58,7 @@ void Render::drawFrame()
 	uint32_t imageIndex;
 	vkAcquireNextImageKHR(device->getLogicalDevice(), swapChainManager->swapChain, UINT64_MAX, syncsManager->getImageAvailableSemaphoreForCurrentFrame(), VK_NULL_HANDLE, &imageIndex);
 
-	commandManager->recordCommandBuffer(imageIndex);
+	commandBuffer->recordCommandBuffer(imageIndex);
 
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -79,7 +69,7 @@ void Render::drawFrame()
 	submitInfo.pWaitSemaphores = waitSemaphores;
 	submitInfo.pWaitDstStageMask = waitStages;
 	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &commandManager->getCommandBufferForCurrentFrame();
+	submitInfo.pCommandBuffers = &commandBuffer->getCommandBufferForCurrentFrame();
 
 	VkSemaphore signalSemaphores[] = { syncsManager->getRenderFinishedSemaphoreForCurrentFrame()};
 	submitInfo.signalSemaphoreCount = 1;

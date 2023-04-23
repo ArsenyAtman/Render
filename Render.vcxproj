@@ -145,7 +145,7 @@
   <ItemGroup>
     <ClCompile Include="source\Application.cpp" />
     <ClCompile Include="source\CommandBufferBindable.cpp" />
-    <ClCompile Include="source\CommandManager.cpp" />
+    <ClCompile Include="source\CommandBuffer.cpp" />
     <ClCompile Include="source\DepthBuffer.cpp" />
     <ClCompile Include="source\Descriptor.cpp" />
     <ClCompile Include="source\DescriptorsManager.cpp" />
@@ -179,7 +179,7 @@
   <ItemGroup>
     <ClInclude Include="source\Application.h" />
     <ClInclude Include="source\CommandBufferBindable.h" />
-    <ClInclude Include="source\CommandManager.h" />
+    <ClInclude Include="source\CommandBuffer.h" />
     <ClInclude Include="source\DepthBuffer.h" />
     <ClInclude Include="source\Descriptor.h" />
     <ClInclude Include="source\DescriptorsManager.h" />

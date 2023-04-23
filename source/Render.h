@@ -6,16 +6,14 @@
 
 #include <vulkan/vulkan.h>
 
+class CommandBuffer;
 class SwapChainManager;
 class GraphicsPipeline;
-class CommandManager;
 class SyncsManager;
-
-class Settings;
-class Window;
 class Device;
+class Window;
 class Model;
-class Buffer;
+class Settings;
 
 struct ApplicationSettings;
 
@@ -30,21 +28,15 @@ public:
 
 	uint32_t getCurrentFrame() const { return currentFrame; }
 
-	const std::vector<Buffer*>& getBuffers() const { return buffers; }
-	Buffer* getIndexBuffer() const { return indexBuffer; }
-
 	SwapChainManager* getSwapChain() const { return swapChainManager; }
 	GraphicsPipeline* getGraphicsPipeline() const { return graphicsPipeline; }
-	CommandManager* getCommandBuffer() const { return commandManager; }
+	CommandBuffer* getCommandBuffer() const { return commandBuffer; }
 
 private:
 
-	std::vector<Buffer*> buffers;
-	Buffer* indexBuffer = nullptr;
-
 	SwapChainManager* swapChainManager = nullptr;
 	GraphicsPipeline* graphicsPipeline = nullptr;
-	CommandManager* commandManager = nullptr;
+	CommandBuffer* commandBuffer = nullptr;
 	SyncsManager* syncsManager = nullptr;
 
 	Device* device;
