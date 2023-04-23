@@ -1,25 +1,27 @@
 #pragma once
 
+#include "RenderModule.h"
+
 #include <vector>
 
 #include <vulkan/vulkan.h>
 
-struct ApplicationSettings;
-
-class SyncsManager
+class SyncsManager : public RenderModule
 {
 
 public:
 
-	SyncsManager(VkDevice logicalDevice, const ApplicationSettings* settings);
+	SyncsManager(Render* render, Device* device, const ApplicationSettings* settings);
 	virtual ~SyncsManager();
+
+	VkSemaphore getImageAvailableSemaphoreForCurrentFrame() const;
+	VkSemaphore getRenderFinishedSemaphoreForCurrentFrame() const;
+	VkFence getInFlightFenceForCurrentFrame() const;
+
+private:
 
 	std::vector<VkSemaphore> imageAvailableSemaphores;
 	std::vector<VkSemaphore> renderFinishedSemaphores;
 	std::vector<VkFence> inFlightFences;
-
-private:
-
-	VkDevice logicalDevice;
 };
 
