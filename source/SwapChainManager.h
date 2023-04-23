@@ -1,5 +1,7 @@
 #pragma once
 
+#include "RenderModule.h"
+
 #include <vector>
 
 #include <vulkan/vulkan.h>
@@ -15,12 +17,11 @@ class Window;
 struct QueueFamilyIndices;
 class DepthBuffer;
 
-class SwapChainManager
+class SwapChainManager : public RenderModule
 {
-
 public:
 
-	SwapChainManager(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool, const QueueFamilyIndices& indices, VkSurfaceKHR surface, Window* window);
+	SwapChainManager(Render* render, Device* device, const ApplicationSettings* settings, Window* window);
 	virtual ~SwapChainManager();
 
 	void recreateSwapChain();
@@ -38,17 +39,16 @@ public:
 
 private:
 
-	void createSwapChain(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool, const QueueFamilyIndices& indices, VkSurfaceKHR surface);
+	void createSwapChain();
 	void createImageViews();
-	void createRenderPass(VkPhysicalDevice physicalDevice);
-	void createFramebuffer(VkImageView depthImageView);
-
-	VkDevice logicalDevice;
-	Window* window;
+	void createRenderPass();
+	void createFramebuffer();
 
 	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
 
 	VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 	VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 	VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+
+	Window* window;
 };

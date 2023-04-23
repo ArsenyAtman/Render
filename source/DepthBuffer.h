@@ -1,21 +1,19 @@
 #pragma once
 
+#include "RenderModule.h"
+
 #include <vulkan/vulkan.h>
 
-class DepthBuffer
+class DepthBuffer : public RenderModule
 {
 
 public:
 
-	DepthBuffer(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool, VkExtent2D swapChainExtent);
+	DepthBuffer(Render* render, Device* device, const ApplicationSettings* settings, VkExtent2D swapChainExtent);
 	virtual ~DepthBuffer();
 
 	VkImage depthImage;
 	VkDeviceMemory depthImageMemory;
 	VkImageView depthImageView;
-
-private:
-
-	VkDevice logicalDevice;
 };
 
