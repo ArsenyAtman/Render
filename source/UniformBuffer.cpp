@@ -18,7 +18,7 @@ UniformBuffer::UniformBuffer(Render* render, Device* device, const ApplicationSe
 {
 	VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 
-	Helpers::createBuffer(getDevice()->getLogicalDevice(), getDevice()->getPhysicalDevice(), bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffer, uniformBufferMemory);
+	Helpers::createBuffer(getDevice(), bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffer, uniformBufferMemory);
 	vkMapMemory(getDevice()->getLogicalDevice(), uniformBufferMemory, 0, bufferSize, 0, &uniformBufferMapped);
 
 	bufferInfo = VkDescriptorBufferInfo();

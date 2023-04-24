@@ -4,7 +4,7 @@
 
 #include "Device.h"
 
-void Helpers::createBuffer(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
+void Helpers::createBuffer(Device* device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
 {
     VkBufferCreateInfo bufferInfo{};
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -12,55 +12,42 @@ void Helpers::createBuffer(VkDevice logicalDevice, VkPhysicalDevice physicalDevi
     bufferInfo.usage = usage;
     bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-    if (vkCreateBuffer(logicalDevice, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
+    if (vkCreateBuffer(device->getLogicalDevice(), &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
         throw std::runtime_error("failed to create buffer!");
     }
 
     VkMemoryRequirements memRequirements;
-    vkGetBufferMemoryRequirements(logicalDevice, buffer, &memRequirements);
+    vkGetBufferMemoryRequirements(device->getLogicalDevice(), buffer, &memRequirements);
 
     VkMemoryAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex = Helpers::findMemoryType(physicalDevice, memRequirements.memoryTypeBits, properties);
+    allocInfo.memoryTypeIndex = Helpers::findMemoryType(device, memRequirements.memoryTypeBits, properties);
 
-    if (vkAllocateMemory(logicalDevice, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
+    if (vkAllocateMemory(device->getLogicalDevice(), &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
         throw std::runtime_error("failed to allocate buffer memory!");
     }
 
-    vkBindBufferMemory(logicalDevice, buffer, bufferMemory, 0);
+    vkBindBufferMemory(device->getLogicalDevice(), buffer, bufferMemory, 0);
 }
 
 void Helpers::copyBuffer(Device* device, VkDeviceSize size, VkBuffer sourceBuffer, VkBuffer destinationBuffer)
 {
+    VkCommandBuffer commandBuffer;
     VkCommandPool commandPool;
-
-    VkCommandPoolCreateInfo poolInfo{};
-    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-    poolInfo.queueFamilyIndex = device->getQueueIndices().graphicsFamily.value();
-
-    VkResult result = vkCreateCommandPool(device->getLogicalDevice(), &poolInfo, nullptr, &commandPool);
-    if (result != VK_SUCCESS)
-    {
-        throw std::runtime_error("Failed to create command pool!");
-    }
-
-    VkCommandBuffer commandBuffer = beginSingleTimeCommands(device->getLogicalDevice(), commandPool);
+    beginSingleTimeCommands(device, commandBuffer, commandPool);
 
     VkBufferCopy copyRegion{};
     copyRegion.size = size;
     vkCmdCopyBuffer(commandBuffer, sourceBuffer, destinationBuffer, 1, &copyRegion);
 
-    endSingleTimeCommands(device->getLogicalDevice(), commandBuffer, device->getGraphicsQueue(), commandPool);
-
-    vkDestroyCommandPool(device->getLogicalDevice(), commandPool, nullptr);
+    endSingleTimeCommands(device, commandBuffer, commandPool);
 }
 
-uint32_t Helpers::findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties)
+uint32_t Helpers::findMemoryType(Device* device, uint32_t typeFilter, VkMemoryPropertyFlags properties)
 {
     VkPhysicalDeviceMemoryProperties memProperties;
-    vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
+    vkGetPhysicalDeviceMemoryProperties(device->getPhysicalDevice(), &memProperties);
 
     for (uint32_t i = 0; i < memProperties.memoryTypeCount; ++i)
     {
@@ -73,7 +60,7 @@ uint32_t Helpers::findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeF
     throw std::runtime_error("failed to find suitable memory type!");
 }
 
-void Helpers::createImage(VkDevice logicalDevice, VkPhysicalDevice physicalDevice, uint32_t textureWidth, uint32_t textureHeight, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& textureImage, VkDeviceMemory& textureImageMemory)
+void Helpers::createImage(Device* device, uint32_t textureWidth, uint32_t textureHeight, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& textureImage, VkDeviceMemory& textureImageMemory)
 {
 	VkImageCreateInfo imageInfo = VkImageCreateInfo();
 	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -90,30 +77,30 @@ void Helpers::createImage(VkDevice logicalDevice, VkPhysicalDevice physicalDevic
 	imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 	imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
 
-	VkResult imageCreationResult = vkCreateImage(logicalDevice, &imageInfo, nullptr, &textureImage);
+	VkResult imageCreationResult = vkCreateImage(device->getLogicalDevice(), &imageInfo, nullptr, &textureImage);
 	if (imageCreationResult != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create image!");
 	}
 
 	VkMemoryRequirements memRequirements;
-	vkGetImageMemoryRequirements(logicalDevice, textureImage, &memRequirements);
+	vkGetImageMemoryRequirements(device->getLogicalDevice(), textureImage, &memRequirements);
 
 	VkMemoryAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	allocInfo.allocationSize = memRequirements.size;
-	allocInfo.memoryTypeIndex = Helpers::findMemoryType(physicalDevice, memRequirements.memoryTypeBits, properties);
+	allocInfo.memoryTypeIndex = Helpers::findMemoryType(device, memRequirements.memoryTypeBits, properties);
 
-	VkResult memoryAllocationResult = vkAllocateMemory(logicalDevice, &allocInfo, nullptr, &textureImageMemory);
+	VkResult memoryAllocationResult = vkAllocateMemory(device->getLogicalDevice(), &allocInfo, nullptr, &textureImageMemory);
 	if (memoryAllocationResult != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to allocate image memory!");
 	}
 
-	vkBindImageMemory(logicalDevice, textureImage, textureImageMemory, 0);
+	vkBindImageMemory(device->getLogicalDevice(), textureImage, textureImageMemory, 0);
 }
 
-VkImageView Helpers::createImageView(VkDevice logicalDevice, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags)
+VkImageView Helpers::createImageView(Device* device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags)
 {
     VkImageViewCreateInfo viewInfo{};
     viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -127,7 +114,7 @@ VkImageView Helpers::createImageView(VkDevice logicalDevice, VkImage image, VkFo
     viewInfo.subresourceRange.layerCount = 1;
 
     VkImageView imageView;
-    VkResult result = vkCreateImageView(logicalDevice, &viewInfo, nullptr, &imageView);
+    VkResult result = vkCreateImageView(device->getLogicalDevice(), &viewInfo, nullptr, &imageView);
     if (result != VK_SUCCESS) {
         throw std::runtime_error("failed to create texture image view!");
     }
@@ -137,20 +124,9 @@ VkImageView Helpers::createImageView(VkDevice logicalDevice, VkImage image, VkFo
 
 void Helpers::copyBufferToImage(Device* device, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
 {
+    VkCommandBuffer commandBuffer;
     VkCommandPool commandPool;
-
-    VkCommandPoolCreateInfo poolInfo{};
-    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-    poolInfo.queueFamilyIndex = device->getQueueIndices().graphicsFamily.value();
-
-    VkResult result = vkCreateCommandPool(device->getLogicalDevice(), &poolInfo, nullptr, &commandPool);
-    if (result != VK_SUCCESS)
-    {
-        throw std::runtime_error("Failed to create command pool!");
-    }
-
-    VkCommandBuffer commandBuffer = Helpers::beginSingleTimeCommands(device->getLogicalDevice(), commandPool);
+    beginSingleTimeCommands(device, commandBuffer, commandPool);
 
     VkBufferImageCopy region{};
     region.bufferOffset = 0;
@@ -167,32 +143,38 @@ void Helpers::copyBufferToImage(Device* device, VkBuffer buffer, VkImage image, 
 
     vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
-    Helpers::endSingleTimeCommands(device->getLogicalDevice(), commandBuffer, device->getGraphicsQueue(), commandPool);
-
-    vkDestroyCommandPool(device->getLogicalDevice(), commandPool, nullptr);
+    endSingleTimeCommands(device, commandBuffer, commandPool);
 }
 
-VkCommandBuffer Helpers::beginSingleTimeCommands(VkDevice logicalDevice, VkCommandPool commandPool)
+void Helpers::beginSingleTimeCommands(Device* device, VkCommandBuffer& outCommandBuffer, VkCommandPool& outCommandPool)
 {
+    VkCommandPoolCreateInfo poolInfo{};
+    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    poolInfo.queueFamilyIndex = device->getQueueIndices().graphicsFamily.value();
+
+    VkResult result = vkCreateCommandPool(device->getLogicalDevice(), &poolInfo, nullptr, &outCommandPool);
+    if (result != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create command pool!");
+    }
+
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandPool = commandPool;
+    allocInfo.commandPool = outCommandPool;
     allocInfo.commandBufferCount = 1;
 
-    VkCommandBuffer commandBuffer;
-    vkAllocateCommandBuffers(logicalDevice, &allocInfo, &commandBuffer);
+    vkAllocateCommandBuffers(device->getLogicalDevice(), &allocInfo, &outCommandBuffer);
 
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-    vkBeginCommandBuffer(commandBuffer, &beginInfo);
-
-    return commandBuffer;
+    vkBeginCommandBuffer(outCommandBuffer, &beginInfo);
 }
 
-void Helpers::endSingleTimeCommands(VkDevice logicalDevice, VkCommandBuffer commandBuffer, VkQueue graphicsQueue, VkCommandPool commandPool)
+void Helpers::endSingleTimeCommands(Device* device, VkCommandBuffer commandBuffer, VkCommandPool commandPool)
 {
     vkEndCommandBuffer(commandBuffer);
 
@@ -201,29 +183,20 @@ void Helpers::endSingleTimeCommands(VkDevice logicalDevice, VkCommandBuffer comm
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandBuffer;
 
-    vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-    vkQueueWaitIdle(graphicsQueue);
+    vkQueueSubmit(device->getGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+    vkQueueWaitIdle(device->getGraphicsQueue());
 
-    vkFreeCommandBuffers(logicalDevice, commandPool, 1, &commandBuffer);
+    vkFreeCommandBuffers(device->getLogicalDevice(), commandPool, 1, &commandBuffer);
+
+    vkDestroyCommandPool(device->getLogicalDevice(), commandPool, nullptr);
 }
 
 
 void Helpers::transitionImageLayout(Device* device, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
 {
+    VkCommandBuffer commandBuffer;
     VkCommandPool commandPool;
-
-    VkCommandPoolCreateInfo poolInfo{};
-    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-    poolInfo.queueFamilyIndex = device->getQueueIndices().graphicsFamily.value();
-
-    VkResult result = vkCreateCommandPool(device->getLogicalDevice(), &poolInfo, nullptr, &commandPool);
-    if (result != VK_SUCCESS)
-    {
-        throw std::runtime_error("Failed to create command pool!");
-    }
-
-    VkCommandBuffer commandBuffer = Helpers::beginSingleTimeCommands(device->getLogicalDevice(), commandPool);
+    beginSingleTimeCommands(device, commandBuffer, commandPool);
 
     VkImageMemoryBarrier barrier{};
     barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -284,18 +257,16 @@ void Helpers::transitionImageLayout(Device* device, VkImage image, VkFormat form
 
     vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
-    Helpers::endSingleTimeCommands(device->getLogicalDevice(), commandBuffer, device->getGraphicsQueue(), commandPool);
-
-    vkDestroyCommandPool(device->getLogicalDevice(), commandPool, nullptr);
+    Helpers::endSingleTimeCommands(device, commandBuffer, commandPool);
 }
 
 
-VkFormat Helpers::findSupportedFormat(VkPhysicalDevice physicalDevice, const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
+VkFormat Helpers::findSupportedFormat(Device* device, const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
 {
     for (VkFormat format : candidates)
     {
         VkFormatProperties props;
-        vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &props);
+        vkGetPhysicalDeviceFormatProperties(device->getPhysicalDevice(), format, &props);
 
         if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
         {
@@ -310,13 +281,12 @@ VkFormat Helpers::findSupportedFormat(VkPhysicalDevice physicalDevice, const std
     throw std::runtime_error("failed to find supported format!");
 }
 
-VkFormat Helpers::findDepthFormat(VkPhysicalDevice physicalDevice)
+VkFormat Helpers::findDepthFormat(Device* device)
 {
-    return Helpers::findSupportedFormat(physicalDevice, { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT }, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+    return Helpers::findSupportedFormat(device, {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT}, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 }
 
 bool Helpers::hasStencilComponent(VkFormat format)
 {
     return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
 }
-

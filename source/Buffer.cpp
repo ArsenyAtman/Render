@@ -24,14 +24,14 @@ void Buffer::constructBuffer(const void* data, int elementSize, size_t countOfEl
 
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
-    Helpers::createBuffer(getDevice()->getLogicalDevice(), getDevice()->getPhysicalDevice(), bufferMemorySize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+    Helpers::createBuffer(getDevice(), bufferMemorySize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
     void* targetData;
     vkMapMemory(getDevice()->getLogicalDevice(), stagingBufferMemory, 0, bufferMemorySize, 0, &targetData);
     memcpy(targetData, data, (size_t)bufferMemorySize);
     vkUnmapMemory(getDevice()->getLogicalDevice(), stagingBufferMemory);
 
-    Helpers::createBuffer(getDevice()->getLogicalDevice(), getDevice()->getPhysicalDevice(), bufferMemorySize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | usageFlags, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, buffer, bufferMemory);
+    Helpers::createBuffer(getDevice(), bufferMemorySize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | usageFlags, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, buffer, bufferMemory);
 
     Helpers::copyBuffer(getDevice(), bufferMemorySize, stagingBuffer, buffer);
 

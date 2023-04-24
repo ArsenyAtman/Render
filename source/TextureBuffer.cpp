@@ -13,14 +13,14 @@ TextureBuffer::TextureBuffer(Render* render, Device* device, const ApplicationSe
 	VkBuffer stagingBuffer;
 	VkDeviceMemory stagingBufferMemory;
 
-	Helpers::createBuffer(getDevice()->getLogicalDevice(), getDevice()->getPhysicalDevice(), texture->getSize(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+	Helpers::createBuffer(getDevice(), texture->getSize(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
 	void* data;
 	vkMapMemory(getDevice()->getLogicalDevice(), stagingBufferMemory, 0, texture->getSize(), 0, &data);
 	memcpy(data, texture->getData(), texture->getSize());
 	vkUnmapMemory(getDevice()->getLogicalDevice(), stagingBufferMemory);
 
-	Helpers::createImage(getDevice()->getLogicalDevice(), getDevice()->getPhysicalDevice(), texture->getWidth(), texture->getHeight(), VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory);
+	Helpers::createImage(getDevice(), texture->getWidth(), texture->getHeight(), VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory);
 
 	Helpers::transitionImageLayout(getDevice(), textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 	Helpers::copyBufferToImage(getDevice(), stagingBuffer, textureImage, texture->getWidth(), texture->getHeight());
@@ -30,7 +30,7 @@ TextureBuffer::TextureBuffer(Render* render, Device* device, const ApplicationSe
 	vkDestroyBuffer(getDevice()->getLogicalDevice(), stagingBuffer, nullptr);
 	vkFreeMemory(getDevice()->getLogicalDevice(), stagingBufferMemory, nullptr);
 
-	textureImageView = Helpers::createImageView(getDevice()->getLogicalDevice(), textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
+	textureImageView = Helpers::createImageView(getDevice(), textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
 
 	VkPhysicalDeviceProperties properties{};
 	vkGetPhysicalDeviceProperties(getDevice()->getPhysicalDevice(), &properties);
