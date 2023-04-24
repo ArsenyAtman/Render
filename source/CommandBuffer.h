@@ -11,7 +11,6 @@ class Buffer;
 
 class CommandBuffer : public RenderModule
 {
-
 public:
 
 	CommandBuffer(Render* render, Device* device, const ApplicationSettings* settings, const Model* model);
@@ -35,4 +34,3 @@ private:
 	std::vector<Buffer*> buffers;
 	Buffer* indexBuffer = nullptr;
 };
-

@@ -17,4 +17,3 @@ private:
 
 	std::string temporaryBatFile;
 };
-

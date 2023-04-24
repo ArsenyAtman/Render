@@ -6,16 +6,16 @@
 
 #include <vulkan/vulkan.h>
 
+class Window;
+struct QueueFamilyIndices;
+class DepthBuffer;
+
 struct SwapChainSupportDetails
 {
 	VkSurfaceCapabilitiesKHR capabilities;
 	std::vector<VkSurfaceFormatKHR> formats;
 	std::vector<VkPresentModeKHR> presentModes;
 };
-
-class Window;
-struct QueueFamilyIndices;
-class DepthBuffer;
 
 class SwapChain : public RenderModule
 {

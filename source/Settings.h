@@ -39,7 +39,6 @@ struct ApplicationSettings
 
 class Settings
 {
-
 public:
 
 	Settings(const std::string& pathToSettings);

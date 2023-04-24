@@ -25,4 +25,3 @@ private:
 	uint32_t countOfChannels;
 	void* pixels;
 };
-

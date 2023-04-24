@@ -23,4 +23,3 @@ private:
 	ShaderType shaderType;
 	std::vector<char> code;
 };
-

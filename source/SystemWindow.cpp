@@ -7,8 +7,8 @@
 SystemWindow::SystemWindow(const ApplicationSettings* settings)
 {
 	glfwInit();
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // Tell GLFW not to create OpenGL context.
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // Disable resizing.
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	window = glfwCreateWindow(settings->windowWidth, settings->windowHeight, settings->windowName.data(), nullptr, nullptr);
 
 	extent = { settings->windowWidth, settings->windowHeight };

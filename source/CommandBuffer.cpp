@@ -42,7 +42,7 @@ void CommandBuffer::createCommandPool()
 	VkResult result = vkCreateCommandPool(getDevice()->getLogicalDevice(), &poolInfo, nullptr, &commandPool);
 	if (result != VK_SUCCESS)
 	{
-		throw std::runtime_error("Failed to create command pool!");
+		throw std::runtime_error("Failed to create a command pool!");
 	}
 }
 
@@ -73,7 +73,7 @@ void CommandBuffer::recordCommandBuffer(uint32_t imageIndex)
 	VkResult commandBufferBeginResult = vkBeginCommandBuffer(getCommandBufferForCurrentFrame(), &beginInfo);
 	if (commandBufferBeginResult != VK_SUCCESS)
 	{
-		throw std::runtime_error("Failed to start recording command buffer!");
+		throw std::runtime_error("Failed to start recording the command buffer!");
 	}
 
 	VkRenderPassBeginInfo renderPassInfo = getRender()->getSwapChain()->getRenderPassInfo(imageIndex);
@@ -99,7 +99,7 @@ void CommandBuffer::recordCommandBuffer(uint32_t imageIndex)
 	VkResult commandBufferEndResult = vkEndCommandBuffer(getCommandBufferForCurrentFrame());
 	if (commandBufferEndResult != VK_SUCCESS)
 	{
-		throw std::runtime_error("Failed to end recording command buffer!");
+		throw std::runtime_error("Failed to end recording the command buffer!");
 	}
 }
 

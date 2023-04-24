@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Tickable.h"
+
 #include <vulkan/vulkan.h>
 
 struct ApplicationSettings;
@@ -7,7 +9,7 @@ class SystemWindow;
 class Instance;
 class Surface;
 
-class Window
+class Window : public Tickable
 {
 public:
 
@@ -19,7 +21,8 @@ public:
 	VkInstance getInstance() const;
 
 	bool shouldExit() const;
-	void tick();
+	
+	virtual void tick() override;
 
 private:
 
@@ -27,4 +30,3 @@ private:
 	Instance* instance = nullptr;
 	Surface* surface = nullptr;
 };
-

@@ -20,7 +20,7 @@ VkInstance Instance::createInstance(SystemWindow* systemWindow, const Applicatio
 		throw std::runtime_error("Validation layers are not available!");
 	}
 
-	VkApplicationInfo applicationInfo = VkApplicationInfo();
+	VkApplicationInfo applicationInfo{};
 	applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	applicationInfo.pApplicationName = settings->applicationName.data();
 	applicationInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
@@ -28,7 +28,7 @@ VkInstance Instance::createInstance(SystemWindow* systemWindow, const Applicatio
 	applicationInfo.engineVersion = VK_MAKE_VERSION(0, 0, 0);
 	applicationInfo.apiVersion = VK_API_VERSION_1_0;
 
-	VkInstanceCreateInfo instanceCreateInfo = VkInstanceCreateInfo();
+	VkInstanceCreateInfo instanceCreateInfo{};
 	instanceCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	instanceCreateInfo.pApplicationInfo = &applicationInfo;
 	uint32_t countOfExtensions = 0;
@@ -50,7 +50,7 @@ VkInstance Instance::createInstance(SystemWindow* systemWindow, const Applicatio
 	VkResult result = vkCreateInstance(&instanceCreateInfo, nullptr, &instance);
 	if (result != VK_SUCCESS)
 	{
-		throw std::runtime_error("Failed to create instance!");
+		throw std::runtime_error("Failed to create an instance!");
 	}
 
 	return instance;

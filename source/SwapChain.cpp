@@ -48,7 +48,7 @@ SwapChain::~SwapChain()
 
 VkRenderPassBeginInfo SwapChain::getRenderPassInfo(uint32_t imageIndex) const
 {
-	VkRenderPassBeginInfo renderPassInfo = VkRenderPassBeginInfo();
+	VkRenderPassBeginInfo renderPassInfo{};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 	renderPassInfo.renderPass = renderPass;
 	renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex];
@@ -62,7 +62,7 @@ VkRenderPassBeginInfo SwapChain::getRenderPassInfo(uint32_t imageIndex) const
 
 VkViewport SwapChain::getViewport() const
 {
-	VkViewport viewport = VkViewport();
+	VkViewport viewport{};
 	viewport.x = 0.0f;
 	viewport.y = 0.0f;
 	viewport.width = static_cast<float>(swapChainExtent.width);
@@ -75,7 +75,7 @@ VkViewport SwapChain::getViewport() const
 
 VkRect2D SwapChain::getScissor() const
 {
-	VkRect2D scissor = VkRect2D();
+	VkRect2D scissor{};
 	scissor.offset = { 0, 0 };
 	scissor.extent = swapChainExtent;
 
@@ -94,7 +94,7 @@ void SwapChain::createSwapChain()
 		imageCount = swapChainSupport.capabilities.maxImageCount;
 	}
 
-	VkSwapchainCreateInfoKHR createInfo = VkSwapchainCreateInfoKHR();
+	VkSwapchainCreateInfoKHR createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 	createInfo.surface = window->getSurface();
 	createInfo.minImageCount = imageCount;
@@ -123,7 +123,7 @@ void SwapChain::createSwapChain()
 	VkResult result = vkCreateSwapchainKHR(getDevice()->getLogicalDevice(), &createInfo, nullptr, &swapChain);
 	if (result != VK_SUCCESS)
 	{
-		throw std::runtime_error("Failed to create swap chain!");
+		throw std::runtime_error("Failed to create a swap chain!");
 	}
 
 	vkGetSwapchainImagesKHR(getDevice()->getLogicalDevice(), swapChain, &imageCount, nullptr);
@@ -213,7 +213,7 @@ void SwapChain::createFramebuffer()
 		std::array<VkImageView, 2> attachments =
 		{
 			swapChainImageViews[i],
-			depthBuffer->depthImageView
+			depthBuffer->getImageView()
 		};
 
 		VkFramebufferCreateInfo framebufferInfo{};

@@ -8,7 +8,6 @@
 
 class SyncsManager : public RenderModule
 {
-
 public:
 
 	SyncsManager(Render* render, Device* device, const ApplicationSettings* settings);
@@ -24,4 +23,3 @@ private:
 	std::vector<VkSemaphore> renderFinishedSemaphores;
 	std::vector<VkFence> inFlightFences;
 };
-

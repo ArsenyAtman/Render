@@ -62,7 +62,7 @@ void UniformBuffer::tick()
 
 VkDescriptorSetLayoutBinding UniformBuffer::getLayoutBinding() const
 {
-	VkDescriptorSetLayoutBinding layoutBinding = VkDescriptorSetLayoutBinding();
+	VkDescriptorSetLayoutBinding layoutBinding{};
 	layoutBinding.binding = 0;
 	layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	layoutBinding.descriptorCount = 1;
@@ -73,7 +73,7 @@ VkDescriptorSetLayoutBinding UniformBuffer::getLayoutBinding() const
 
 VkDescriptorPoolSize UniformBuffer::getPoolSize() const
 {
-	VkDescriptorPoolSize poolSize = VkDescriptorPoolSize();
+	VkDescriptorPoolSize poolSize{};
 	poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	poolSize.descriptorCount = static_cast<uint32_t>(getSettings()->maxFramesInFlight);
 
@@ -82,7 +82,7 @@ VkDescriptorPoolSize UniformBuffer::getPoolSize() const
 
 VkWriteDescriptorSet UniformBuffer::getWriteSet(VkDescriptorSet descriptorSet) const
 {
-	VkWriteDescriptorSet writeSet = VkWriteDescriptorSet();
+	VkWriteDescriptorSet writeSet{};
 	writeSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 	writeSet.dstSet = descriptorSet;
 	writeSet.dstBinding = 0;

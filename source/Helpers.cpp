@@ -13,7 +13,7 @@ void Helpers::createBuffer(Device* device, VkDeviceSize size, VkBufferUsageFlags
     bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
     if (vkCreateBuffer(device->getLogicalDevice(), &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create buffer!");
+        throw std::runtime_error("Failed to create a buffer!");
     }
 
     VkMemoryRequirements memRequirements;
@@ -25,7 +25,7 @@ void Helpers::createBuffer(Device* device, VkDeviceSize size, VkBufferUsageFlags
     allocInfo.memoryTypeIndex = Helpers::findMemoryType(device, memRequirements.memoryTypeBits, properties);
 
     if (vkAllocateMemory(device->getLogicalDevice(), &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
-        throw std::runtime_error("failed to allocate buffer memory!");
+        throw std::runtime_error("Failed to allocate the buffer memory!");
     }
 
     vkBindBufferMemory(device->getLogicalDevice(), buffer, bufferMemory, 0);
@@ -62,7 +62,7 @@ uint32_t Helpers::findMemoryType(Device* device, uint32_t typeFilter, VkMemoryPr
 
 void Helpers::createImage(Device* device, uint32_t textureWidth, uint32_t textureHeight, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& textureImage, VkDeviceMemory& textureImageMemory)
 {
-	VkImageCreateInfo imageInfo = VkImageCreateInfo();
+    VkImageCreateInfo imageInfo{};
 	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 	imageInfo.imageType = VK_IMAGE_TYPE_2D;
 	imageInfo.extent.width = textureWidth;
@@ -156,7 +156,7 @@ void Helpers::beginSingleTimeCommands(Device* device, VkCommandBuffer& outComman
     VkResult result = vkCreateCommandPool(device->getLogicalDevice(), &poolInfo, nullptr, &outCommandPool);
     if (result != VK_SUCCESS)
     {
-        throw std::runtime_error("Failed to create command pool!");
+        throw std::runtime_error("Failed to create a command pool!");
     }
 
     VkCommandBufferAllocateInfo allocInfo{};
@@ -252,7 +252,7 @@ void Helpers::transitionImageLayout(Device* device, VkImage image, VkFormat form
     }
     else
     {
-        throw std::invalid_argument("unsupported layout transition!");
+        throw std::invalid_argument("Unsupported layout transition!");
     }
 
     vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
@@ -278,7 +278,7 @@ VkFormat Helpers::findSupportedFormat(Device* device, const std::vector<VkFormat
         }
     }
 
-    throw std::runtime_error("failed to find supported format!");
+    throw std::runtime_error("Failed to find a supported format!");
 }
 
 VkFormat Helpers::findDepthFormat(Device* device)

@@ -10,7 +10,7 @@ Surface::Surface(SystemWindow* systemWindow, Instance* instance)
 	VkResult result = glfwCreateWindowSurface(instance->getInstance(), systemWindow->getWindow(), nullptr, &surface);
 	if (result != VK_SUCCESS)
 	{
-		throw std::runtime_error("Unable to create surface!");
+		throw std::runtime_error("Unable to create a surface!");
 	}
 
 	this->instance = instance;

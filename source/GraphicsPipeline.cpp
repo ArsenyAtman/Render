@@ -147,7 +147,7 @@ void GraphicsPipeline::createGraphicsPipeline(const std::vector<Shader*>& shader
 	VkResult pipelineCreationResult = vkCreateGraphicsPipelines(getDevice()->getLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline);
 	if (pipelineCreationResult != VK_SUCCESS)
 	{
-		throw std::runtime_error("failed to create graphics pipeline!");
+		throw std::runtime_error("Failed to create a graphics pipeline!");
 	}
 
 	for (VkShaderModule& shaderModule : shaderModules)

@@ -21,4 +21,3 @@ public:
 	Texture* loadTexture(const std::string& texturePath);
 	Shader* loadShader(const std::string& shaderPath);
 };
-

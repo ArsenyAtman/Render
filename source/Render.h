@@ -34,6 +34,8 @@ public:
 
 private:
 
+	void drawFrame();
+
 	SwapChain* swapChain = nullptr;
 	GraphicsPipeline* graphicsPipeline = nullptr;
 	CommandBuffer* commandBuffer = nullptr;
@@ -43,6 +45,4 @@ private:
 	const ApplicationSettings* settings = nullptr;
 
 	uint32_t currentFrame = 0;
-
-	void drawFrame();
 };

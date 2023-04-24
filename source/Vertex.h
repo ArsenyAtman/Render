@@ -8,7 +8,6 @@
 
 struct Vertex
 {
-
 public:
 
 	glm::vec3 position;

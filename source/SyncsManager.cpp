@@ -22,11 +22,21 @@ SyncsManager::SyncsManager(Render* render, Device* device, const ApplicationSett
 	for (size_t i = 0; i < settings->maxFramesInFlight; ++i)
 	{
 		VkResult imageAvailableSemaphoreCreationResult = vkCreateSemaphore(getDevice()->getLogicalDevice(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]);
-		VkResult renderFinishedSemaphoreCreationResult = vkCreateSemaphore(getDevice()->getLogicalDevice(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]);
-		VkResult flightFenceCreationResult = vkCreateFence(getDevice()->getLogicalDevice(), &fenceInfo, nullptr, &inFlightFences[i]);
-		if (imageAvailableSemaphoreCreationResult != VK_SUCCESS || renderFinishedSemaphoreCreationResult != VK_SUCCESS || flightFenceCreationResult != VK_SUCCESS)
+		if (imageAvailableSemaphoreCreationResult != VK_SUCCESS)
 		{
-			throw std::runtime_error("Failed to create semaphores!");
+			throw std::runtime_error("Failed to create the image available semaphore!");
+		}
+
+		VkResult renderFinishedSemaphoreCreationResult = vkCreateSemaphore(getDevice()->getLogicalDevice(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]);
+		if (renderFinishedSemaphoreCreationResult != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create the render finished semaphore!");
+		}
+		
+		VkResult flightFenceCreationResult = vkCreateFence(getDevice()->getLogicalDevice(), &fenceInfo, nullptr, &inFlightFences[i]);
+		if (flightFenceCreationResult != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create the flight fence!");
 		}
 	}
 }

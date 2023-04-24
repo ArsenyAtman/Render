@@ -27,4 +27,3 @@ private:
 
 	VkDescriptorImageInfo imageInfo;
 };
-

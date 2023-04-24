@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#define GLFW_INCLUDE_VULKAN // Include Vulkan inside GLFW
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
 struct ApplicationSettings;
@@ -28,4 +28,3 @@ private:
 	GLFWwindow* window = nullptr;
 	VkExtent2D extent;
 };
-

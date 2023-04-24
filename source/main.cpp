@@ -5,9 +5,6 @@
 #include "Application.h"
 
 /**
- * TODO: refactor helpers
- * TODO: make code prettier
- * 
  * TODO: Handle VK_ERROR_INCOMPATIBLE_DRIVER.
  * TODO: Check extension support.
  * TODO: Message callback in validation layers.
@@ -25,9 +22,9 @@ int main()
 	{
 		Application application;
 	}
-	catch (const std::exception& e)
+	catch (const std::exception& exception)
 	{
-		std::cerr << e.what() << std::endl;
+		std::cerr << exception.what() << std::endl;
 		return EXIT_FAILURE;
 	}
 

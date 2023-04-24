@@ -78,7 +78,7 @@ void DescriptorsManager::createDescriptorSetLayout()
 	VkResult result = vkCreateDescriptorSetLayout(getDevice()->getLogicalDevice(), &layoutInfo, nullptr, &descriptorSetLayout);
 	if (result != VK_SUCCESS)
 	{
-		throw std::runtime_error("Failed to create descriptor set layout!");
+		throw std::runtime_error("Failed to create a descriptor set layout!");
 	}
 }
 
@@ -99,7 +99,7 @@ void DescriptorsManager::createDescriptorPool()
 	VkResult result = vkCreateDescriptorPool(getDevice()->getLogicalDevice(), &poolInfo, nullptr, &descriptorPool);
 	if (result != VK_SUCCESS)
 	{
-		throw std::runtime_error("failed to create descriptor pool!");
+		throw std::runtime_error("Failed to create a descriptor pool!");
 	}
 }
 
@@ -118,7 +118,7 @@ void DescriptorsManager::createDescriptorSets()
 	VkResult result = vkAllocateDescriptorSets(getDevice()->getLogicalDevice(), &allocInfo, descriptorSets.data());
 	if (result != VK_SUCCESS)
 	{
-		throw std::runtime_error("failed to allocate descriptor sets!");
+		throw std::runtime_error("Failed to allocate descriptor sets!");
 	}
 
 	for (size_t i = 0; i < descriptorsForFrames.size(); ++i)

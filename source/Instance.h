@@ -1,8 +1,8 @@
 #pragma once
 
-#include <vulkan/vulkan.h>
-
 #include <vector>
+
+#include <vulkan/vulkan.h>
 
 class SystemWindow;
 struct ApplicationSettings;
@@ -23,4 +23,3 @@ private:
 
 	VkInstance instance;
 };
-

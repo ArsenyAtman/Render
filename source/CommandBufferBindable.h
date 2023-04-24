@@ -8,4 +8,3 @@ public:
 
 	virtual void bindToCommandBuffer(VkCommandBuffer commandBuffer) const = 0;
 };
-

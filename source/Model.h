@@ -24,4 +24,3 @@ private:
 	std::vector<Shader*> shaders;
 
 };
-

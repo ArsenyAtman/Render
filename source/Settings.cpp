@@ -7,7 +7,7 @@ Settings::Settings(const std::string& pathToSettings)
 	applicationSettings = extractApplicationSettingsFromFile(pathToSettings);
 	if (applicationSettings == nullptr)
 	{
-		throw std::runtime_error("Failed to parse settings ini!");
+		throw std::runtime_error("Failed to parse the settings ini!");
 	}
 }
 

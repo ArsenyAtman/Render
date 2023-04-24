@@ -78,7 +78,7 @@ void Render::drawFrame()
 	VkResult result = vkQueueSubmit(device->getGraphicsQueue(), 1, &submitInfo, syncsManager->getInFlightFenceForCurrentFrame());
 	if (result != VK_SUCCESS)
 	{
-		throw std::runtime_error("failed to submit draw command buffer!");
+		throw std::runtime_error("Failed to submit the draw command buffer!");
 	}
 
 	VkPresentInfoKHR presentInfo{};

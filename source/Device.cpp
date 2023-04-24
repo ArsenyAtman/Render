@@ -12,7 +12,7 @@ Device::Device(Window* window, const ApplicationSettings* settings)
 	physicalDevice = pickPhysicalDevice(window, settings);
 	if (physicalDevice == VK_NULL_HANDLE)
 	{
-		throw std::runtime_error("Failed to pick physical device!");
+		throw std::runtime_error("Failed to pick a physical device!");
 	}
 
 	getQueueIndices(physicalDevice, window, queueIndices);
@@ -174,7 +174,7 @@ VkDevice Device::createLogicalDevice(VkPhysicalDevice physicalDevice, const Queu
 	float queuePriority = 1.0f;
 	for (uint32_t queueIndex : queueIndices)
 	{
-		VkDeviceQueueCreateInfo queueCreateInfo = VkDeviceQueueCreateInfo();
+		VkDeviceQueueCreateInfo queueCreateInfo{};
 		queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 		queueCreateInfo.queueFamilyIndex = queueIndex;
 		queueCreateInfo.queueCount = 1;
@@ -182,10 +182,10 @@ VkDevice Device::createLogicalDevice(VkPhysicalDevice physicalDevice, const Queu
 		queueCreateInfos.push_back(queueCreateInfo);
 	}
 
-	VkPhysicalDeviceFeatures deviceFeatures = VkPhysicalDeviceFeatures();
+	VkPhysicalDeviceFeatures deviceFeatures{};
 	deviceFeatures.samplerAnisotropy = VK_TRUE;
 
-	VkDeviceCreateInfo createInfo = VkDeviceCreateInfo();
+	VkDeviceCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 	createInfo.pQueueCreateInfos = queueCreateInfos.data();
 	createInfo.queueCreateInfoCount = 1;
